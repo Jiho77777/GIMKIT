@@ -2151,7 +2151,7 @@
           const bagVal = g.fishBag.reduce((a, b) => a + b.val, 0);
           $('play2dPill').textContent = `📍 ${g.zone} · 🪱 Bait ${g.bait} · 🎒 ${g.fishBag.length}/${g.maxBag} (${money(bagVal)})`;
         } else if (g.mode === 'dld') {
-          $('play2dPill').textContent = `🏁 ${Math.floor(g.heightM/10)}% · Don't Look Down`;
+          $('play2dPill').textContent = `🏔️ ${Math.floor(g.heightM)}m / 1,000m`;
         } else if (g.mode === 'knockback') {
           $('play2dPill').textContent = `🔫 Ammo ${g.ammo ?? 12} · 💥 Fragility ${g.fragility ?? 0}% · KO ${g.kos ?? 0}`;
         } else if (g.mode === 'blastball') {
@@ -2555,37 +2555,72 @@
          DON'T LOOK DOWN (EXACT 6 NAMED SUMMITS, 1000m, SUMMIT 6 LASERS)
          ======================== */
       function runDLD() {
-        const c=$('canvas2d'),ctx=c.getContext('2d'),WORLD_END=6200,FLOOR=76;
+        const c=$('canvas2d'),ctx=c.getContext('2d'),WORLD_TOP=4800;
         function fit(){c.width=c.parentElement.clientWidth||800;c.height=Math.max(440,window.innerHeight-130);} fit();
-        const p={x:90,y:FLOOR,vx:0,vy:0,jumps:2,walkPhase:0,lookX:1,squashX:1,squashY:1};
         const sections=[
-          {name:'Summit 1',sky:'#73c9ec',accent:'#986b45',start:0},
-          {name:'Summit 2',sky:'#59bde1',accent:'#ff958c',start:1000},
-          {name:'Summit 3',sky:'#8ac8e8',accent:'#d5ad6d',start:2000},
-          {name:'Summit 4',sky:'#a9d9c0',accent:'#9bbd65',start:3000},
-          {name:'Summit 5',sky:'#c5eaf5',accent:'#f3fbff',start:4000},
-          {name:'Summit 6',sky:'#9ebce9',accent:'#d9d4f7',start:5000}
+          {name:'Tutorial',start:0,end:170,sky:'#65c8ee',accent:'#668b62',ground:'#557c5e'},
+          {name:'Emberwall Ascent',start:170,end:1008,sky:'#65c8ee',accent:'#946642',ground:'#557c5e'},
+          {name:'Coral Climb',start:1008,end:1315,sky:'#54bce1',accent:'#ff958c',ground:'#438d99'},
+          {name:'Agent Adventure',start:1315,end:2150,sky:'#83c9e8',accent:'#c6a16c',ground:'#5e7193'},
+          {name:'Growing Up',start:2150,end:2750,sky:'#a8d9c2',accent:'#9cbd69',ground:'#66854e'},
+          {name:'Frosty Peaks',start:2750,end:3380,sky:'#c5eaf5',accent:'#f2fbff',ground:'#769bb4'},
+          {name:'One Way Up',start:3380,end:4800,sky:'#91b9e7',accent:'#d9d2f5',ground:'#6d7297'}
         ];
-        const platforms=[{x:0,y:FLOOR,w:520,h:34,kind:'start',section:0}],props=[];
-        let x=390,n=0;
-        while(x<WORLD_END-180){
-          const section=Math.min(5,Math.floor(x/1000)),gap=105+(n%4)*17,w=110+(n%3)*24;
-          const y=FLOOR+((n*47)%4)*28,kind=['ledge','crate','beam','stone'][n%4];
-          platforms.push({x:x+gap,y,w,h:kind==='beam'?14:20,kind,section});
-          if(n%3===1)props.push({x:x+gap+w*.55,y:y+20,kind:section===4?'ice':kind==='crate'?'crate':'pillar'});
-          x+=gap+w;n++;
-        }
-        platforms.push({x:WORLD_END-230,y:FLOOR+80,w:230,h:28,kind:'finish',section:5});
-        const checkpoints=[0,1000,2000,3000,4000,5000],particles=[];
-        let checkpoint=0,bestSection=0,jp=false,last=performance.now(),cameraX=0;
-        function sectionAt(v){return Math.min(5,Math.max(0,Math.floor(v/1000)));}
-        function drawPlatform(pl,sx,sy,theme){
-          ctx.save();let fill=theme.accent;
-          if(pl.kind==='start')fill='#6d8d68';if(pl.kind==='finish')fill='#d7c8ff';
-          if(pl.kind==='crate')fill='#a87649';if(pl.kind==='beam')fill='#806044';if(pl.kind==='stone')fill='#8b929b';
-          ctx.fillStyle=fill;ctx.fillRect(sx,sy,pl.w,pl.h);ctx.fillStyle='rgba(255,255,255,.35)';ctx.fillRect(sx,sy,pl.w,4);
-          ctx.strokeStyle='rgba(25,35,48,.75)';ctx.lineWidth=2;ctx.strokeRect(sx,sy,pl.w,pl.h);
-          if(pl.kind==='crate'){ctx.beginPath();ctx.moveTo(sx+4,sy+3);ctx.lineTo(sx+pl.w-4,sy+pl.h-3);ctx.moveTo(sx+pl.w-4,sy+3);ctx.lineTo(sx+4,sy+pl.h-3);ctx.stroke();}ctx.restore();
+        const p={x:82,y:45,vx:0,vy:0,jumps:2,walkPhase:0,lookX:1,squashX:1,squashY:1};
+        const platforms=[],props=[];
+        const add=(x,y,w,h,kind,section)=>platforms.push({x,y,w,h,kind,section});
+        const prop=(x,y,w,h,kind)=>props.push({x,y,w,h,kind});
+        // Tutorial spawn and short practice ledges.
+        add(25,28,220,28,'start',0);
+        add(285,95,78,16,'tutorial',0);add(405,145,85,16,'tutorial',0);
+        add(535,195,95,18,'tutorial',1);
+        prop(55,60,32,42,'sign');prop(175,60,30,42,'flag');
+        // Emberwall Ascent: the first summit follows the winding layout shown in
+        // Gimkit's public map preview: tiny steps, flags, logs, barrels, pillars,
+        // a timber platform, slanted beams and a final high ledge.
+        [
+          [660,245,70,14,'wood'],[560,305,62,14,'wood'],[445,365,68,14,'wood'],
+          [330,425,72,16,'flagledge'],[405,500,82,14,'beam'],[520,565,52,14,'stone'],
+          [615,630,42,14,'stone'],[690,700,44,14,'stone'],[625,770,48,14,'stone'],
+          [510,835,50,14,'stone'],[385,900,52,14,'stone'],[270,965,70,16,'wood'],
+          [350,1035,88,18,'wood'],[475,1105,95,18,'beam'],[610,1175,110,18,'ledge']
+        ].forEach(v=>add(...v.slice(0,4),v[4],1));
+        prop(280,445,24,32,'flag');prop(325,450,24,32,'flag');
+        prop(445,540,34,34,'barrel');prop(495,540,34,34,'barrel');
+        prop(610,670,25,58,'pillar');prop(690,740,25,58,'pillar');
+        prop(545,850,35,32,'barrel');prop(405,930,35,32,'barrel');
+        prop(610,1195,30,28,'crate');
+        // Remaining summits are separate themed sections with alternating
+        // ledges and recognizable props rather than one repeated staircase.
+        const routes=[
+          [[260,1260,90,'coral'],[420,1335,76,'coral'],[590,1410,120,'ledge']],
+          [[610,1510,70,'stone'],[690,1585,48,'pillar'],[575,1660,82,'stone'],[420,1735,70,'pillar'],[250,1810,90,'stone'],[110,1885,75,'beam'],[230,1960,85,'stone'],[410,2035,90,'ledge']],
+          [[550,2240,80,'garden'],[680,2315,70,'branch'],[560,2390,78,'garden'],[390,2465,90,'branch'],[220,2540,80,'garden'],[360,2615,120,'ledge']],
+          [[520,2840,75,'ice'],[665,2915,90,'ice'],[550,2990,78,'beam'],[380,3065,90,'ice'],[210,3140,78,'ice'],[360,3215,120,'ledge']],
+          [[530,3460,80,'sky'],[680,3535,72,'pillar'],[570,3610,82,'sky'],[405,3685,72,'beam'],[240,3760,85,'sky'],[95,3835,72,'pillar'],[230,3910,85,'sky'],[405,3985,78,'beam'],[585,4060,85,'sky'],[680,4135,70,'pillar'],[540,4210,85,'sky'],[365,4285,78,'beam'],[190,4360,85,'sky'],[80,4435,72,'pillar'],[225,4510,85,'sky'],[405,4585,78,'beam'],[590,4660,90,'sky'],[440,4740,260,'finish']]
+        ];
+        routes.forEach((route,idx)=>route.forEach(([x,y,w,kind])=>{
+          const section=idx+2;add(x,y,w,kind==='pillar'?20:16,kind,section);
+          if(kind==='pillar')prop(x+20,y+18,25,54,'pillar');
+          if(kind==='branch')prop(x+22,y+18,55,18,'branch');
+          if(kind==='ice')prop(x+24,y+18,30,26,'ice');
+        }));
+        const lasers=[{x:160,y:4335,w:180},{x:425,y:4510,w:190},{x:240,y:4665,w:210}];
+        const checkpointY=[28,170,1008,1315,2150,2750,3380];
+        let checkpoint=28,best=0,jp=false,last=performance.now(),lastDrain=0;
+        function sectionAt(y){for(let i=sections.length-1;i>=0;i--)if(y>=sections[i].start)return i;return 0;}
+        function cloud(x,y,scale){ctx.fillStyle='rgba(255,255,255,.75)';ctx.beginPath();ctx.arc(x,y,14*scale,0,Math.PI*2);ctx.arc(x+18*scale,y-7*scale,19*scale,0,Math.PI*2);ctx.arc(x+38*scale,y,14*scale,0,Math.PI*2);ctx.fill();}
+        function drawPlatform(pl,sy){
+          let fill=sections[pl.section].accent;
+          if(pl.kind==='start')fill='#668a60';if(pl.kind==='beam')fill='#795a42';
+          if(pl.kind==='stone'||pl.kind==='pillar')fill='#858e9a';
+          if(pl.kind==='wood'||pl.kind==='flagledge')fill='#95683f';
+          if(pl.kind==='finish')fill='#ddd2ff';
+          ctx.fillStyle=fill;ctx.fillRect(pl.x,sy,pl.w,pl.h);
+          ctx.fillStyle='rgba(255,255,255,.35)';ctx.fillRect(pl.x,sy,pl.w,4);
+          ctx.strokeStyle='rgba(30,40,52,.75)';ctx.lineWidth=2;ctx.strokeRect(pl.x,sy,pl.w,pl.h);
+          if(pl.kind==='beam'){ctx.strokeStyle='rgba(30,30,30,.3)';for(let k=12;k<pl.w;k+=24){ctx.beginPath();ctx.moveTo(pl.x+k,sy+2);ctx.lineTo(pl.x+k-6,sy+pl.h-2);ctx.stroke();}}
+          if(pl.kind==='flagledge'){[0,1].forEach(i=>{ctx.fillStyle='#4c535a';ctx.fillRect(pl.x+8+i*30,sy-35,3,35);ctx.fillStyle='#36c878';ctx.fillRect(pl.x+11+i*30,sy-34,18,13);});}
         }
         function loop(now){
           const g=state.game;if(!g||!g.running||g.mode!=='dld')return;
@@ -2595,23 +2630,37 @@
             else if(keys['d']||keys['arrowright']||pad.right){p.vx=4.1;p.lookX=1;moving=true;}else p.vx*=.82;
             if(moving)p.walkPhase+=dt*14;
             const jump=keys['w']||keys['arrowup']||keys[' ']||pad.up;
-            if(jump&&!jp&&p.jumps>0&&g.energy>=5){p.vy=11.4;p.jumps--;g.energy-=5;p.squashX=.84;p.squashY=1.18;Sound.play('jump');updateHud();}
-            jp=jump;p.vy-=.48;const oldY=p.y;p.x=Math.max(12,Math.min(WORLD_END-35,p.x+p.vx));p.y+=p.vy;
-            if(p.vy<=0)for(const pl of platforms)if(p.x+12>=pl.x&&p.x-12<=pl.x+pl.w&&oldY>=pl.y&&p.y<=pl.y){p.y=pl.y;p.vy=0;p.jumps=2;break;}
-            if(p.y<-80){p.x=checkpoint+70;p.y=FLOOR+20;p.vx=0;p.vy=0;p.jumps=2;toast('체크포인트로 돌아왔어요!','error');}
-            const si=sectionAt(p.x);if(si>bestSection){bestSection=si;checkpoint=checkpoints[si];toast(sections[si].name+' 도착!','success');}
-            g.heightM=Math.min(1000,Math.round(p.x/WORLD_END*1000));
-            if(p.x>=WORLD_END-100){g.heightM=1000;Sound.play('correct');toast('코스 완주!','success');endGame();return;}
+            if(jump&&!jp&&p.jumps>0&&g.energy>=5){p.vy=11.2;p.jumps--;g.energy-=5;p.squashX=.84;p.squashY=1.18;Sound.play('jump');updateHud();}
+            jp=jump;p.vy-=.46;const oldY=p.y;
+            p.x=Math.max(12,Math.min(788,p.x+p.vx));p.y+=p.vy;
+            if(p.vy<=0)for(const pl of platforms)if(p.x+10>=pl.x&&p.x-10<=pl.x+pl.w&&oldY>=pl.y&&p.y<=pl.y){p.y=pl.y;p.vy=0;p.jumps=2;break;}
+            if(p.y<-90){p.x=82;p.y=checkpoint+22;p.vx=0;p.vy=0;p.jumps=2;Sound.play('wrong');toast('다시 시작 지점으로 돌아왔어요!','error');}
+            const si=sectionAt(p.y);
+            if(si>best){best=si;checkpoint=checkpointY[si];toast(si===1?'Emberwall Ascent 도착!':sections[si].name+' 도착!','success');}
+            if(moving&&now-lastDrain>350){g.energy=Math.max(0,g.energy-.3);lastDrain=now;updateHud();}
+            if(si===6&&Math.sin(t*2.1)>.1)for(const lz of lasers)if(p.x>=lz.x-8&&p.x<=lz.x+lz.w+8&&Math.abs(p.y-lz.y)<16){p.y=checkpoint+22;p.vy=0;p.jumps=2;toast('레이저에 닿았어요! 체크포인트부터 다시 시작해요.','error');break;}
+            g.heightM=Math.min(1000,Math.round(p.y/WORLD_TOP*1000));if(g.heightM>g.maxHeightM+3){g.maxHeightM=g.heightM;updateHud();}
+            if(p.y>=WORLD_TOP){g.heightM=1000;Sound.play('correct');toast('🏁 Climb Complete!','success');endGame();return;}
             p.squashX+=(1-p.squashX)*.18;p.squashY+=(1-p.squashY)*.18;
           }
-          const si=sectionAt(p.x),theme=sections[si];cameraX=Math.max(0,Math.min(WORLD_END-c.width,p.x-c.width*.34));
-          const grad=ctx.createLinearGradient(0,0,0,c.height);grad.addColorStop(0,theme.sky);grad.addColorStop(1,'#e6f4fa');ctx.fillStyle=grad;ctx.fillRect(0,0,c.width,c.height);
-          for(let i=0;i<12;i++){const wx=i*260+80-cameraX*.28,wy=c.height-100-(i%3)*24;ctx.fillStyle='rgba(255,255,255,.22)';ctx.beginPath();ctx.arc(wx,wy,55,0,Math.PI*2);ctx.arc(wx+48,wy+4,40,0,Math.PI*2);ctx.fill();}
-          for(let i=0;i<8;i++){const wx=i*210-cameraX*.55;ctx.fillStyle='rgba(63,91,116,.14)';ctx.beginPath();ctx.moveTo(wx,c.height);ctx.lineTo(wx+100,c.height-150-(i%3)*25);ctx.lineTo(wx+230,c.height);ctx.fill();}
-          platforms.forEach(pl=>{const sx=pl.x-cameraX,sy=c.height-pl.y;if(sx+pl.w>-30&&sx<c.width+30)drawPlatform(pl,sx,sy,sections[pl.section]);});
-          props.forEach(ob=>{const sx=ob.x-cameraX,sy=c.height-ob.y-32;if(sx<-60||sx>c.width+60)return;ctx.fillStyle=ob.kind==='ice'?'#e8fbff':ob.kind==='crate'?'#96623c':'#8c969f';if(ob.kind==='pillar'){ctx.fillRect(sx,sy,26,32);ctx.fillRect(sx-5,sy,36,6);}else if(ob.kind==='crate'){ctx.fillRect(sx,sy,32,32);ctx.strokeStyle='#513b2a';ctx.strokeRect(sx,sy,32,32);}else{ctx.beginPath();ctx.moveTo(sx,sy+32);ctx.lineTo(sx+16,sy);ctx.lineTo(sx+32,sy+32);ctx.closePath();ctx.fill();}});
-          drawGim(ctx,p.x-cameraX,c.height-p.y-20,{skin:state.playerSkin,color:state.playerColor,name:state.playerName,walkPhase:p.walkPhase,moving:moving&&p.vy===0,lookX:p.lookX,lookY:p.vy>1?-1:p.vy<-2?1:0,squashX:p.squashX,squashY:p.squashY,shadowScale:p.vy===0?1:.5,t});
-          ctx.fillStyle='rgba(20,36,58,.72)';ctx.beginPath();ctx.roundRect(14,14,165,44,9);ctx.fill();ctx.fillStyle='#fff';ctx.font='bold 13px sans-serif';ctx.textAlign='left';ctx.fillText(theme.name+' · '+(si+1)+'/6',26,41);
+          const si=sectionAt(p.y),theme=sections[si],camY=Math.max(0,p.y-c.height*.42);
+          const grad=ctx.createLinearGradient(0,0,0,c.height);grad.addColorStop(0,theme.sky);grad.addColorStop(1,'#dff3fb');ctx.fillStyle=grad;ctx.fillRect(0,0,c.width,c.height);
+          for(let i=0;i<18;i++){const wx=(i*167)%850,wy=160+i*245,sy=c.height-(wy-camY);if(sy>-30&&sy<c.height+30)cloud(wx,sy,.7+(i%3)*.13);}
+          ctx.fillStyle='rgba(255,255,255,.16)';ctx.beginPath();ctx.moveTo(0,c.height);for(let x=0;x<=c.width;x+=70)ctx.lineTo(x,c.height-70-(x*13%85));ctx.lineTo(c.width,c.height);ctx.fill();
+          platforms.forEach(pl=>{const sy=c.height-(pl.y-camY);if(sy>-40&&sy<c.height+40)drawPlatform(pl,sy);});
+          props.forEach(ob=>{
+            const sy=c.height-(ob.y-camY)-ob.h;if(sy<-80||sy>c.height+80)return;
+            if(ob.kind==='sign'){ctx.fillStyle='#75573d';ctx.fillRect(ob.x,sy,8,ob.h);ctx.fillStyle='#d8b879';ctx.fillRect(ob.x-14,sy,38,22);ctx.fillStyle='#3e342a';ctx.font='bold 9px sans-serif';ctx.fillText('TUTORIAL',ob.x-12,sy+14);}
+            if(ob.kind==='flag'){ctx.fillStyle='#50555c';ctx.fillRect(ob.x,sy,4,ob.h);ctx.fillStyle='#35c875';ctx.fillRect(ob.x+4,sy+2,24,15);ctx.fillStyle='#fff';ctx.font='bold 9px sans-serif';ctx.fillText('GO!',ob.x+7,sy+13);}
+            if(ob.kind==='barrel'){ctx.fillStyle='#8d5d3c';ctx.beginPath();ctx.roundRect(ob.x,sy,ob.w,ob.h,7);ctx.fill();ctx.strokeStyle='#523b2b';ctx.stroke();ctx.fillStyle='#c49b6d';ctx.fillRect(ob.x+3,sy+7,ob.w-6,4);ctx.fillRect(ob.x+3,sy+ob.h-11,ob.w-6,4);}
+            if(ob.kind==='pillar'){ctx.fillStyle='#929aa5';ctx.fillRect(ob.x,sy,ob.w,ob.h);ctx.fillStyle='#d5dce5';ctx.fillRect(ob.x-5,sy,ob.w+10,7);}
+            if(ob.kind==='crate'){ctx.fillStyle='#98683f';ctx.fillRect(ob.x,sy,ob.w,ob.h);ctx.strokeStyle='#543c2a';ctx.strokeRect(ob.x,sy,ob.w,ob.h);}
+            if(ob.kind==='branch'){ctx.fillStyle='#795333';ctx.fillRect(ob.x,sy,ob.w,ob.h);ctx.fillStyle='#9cc86d';ctx.beginPath();ctx.arc(ob.x+ob.w*.35,sy-6,12,0,Math.PI*2);ctx.fill();}
+            if(ob.kind==='ice'){ctx.fillStyle='#effcff';ctx.beginPath();ctx.moveTo(ob.x,sy+ob.h);ctx.lineTo(ob.x+ob.w*.2,sy);ctx.lineTo(ob.x+ob.w*.8,sy);ctx.lineTo(ob.x+ob.w,sy+ob.h);ctx.closePath();ctx.fill();ctx.strokeStyle='#80c7e6';ctx.stroke();}
+          });
+          if(si===6&&Math.sin(t*2.1)>.1)lasers.forEach(lz=>{const sy=c.height-(lz.y-camY);if(sy<-25||sy>c.height+25)return;ctx.save();ctx.shadowColor='#ff344f';ctx.shadowBlur=12;ctx.strokeStyle='#ff405d';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(lz.x,sy);ctx.lineTo(lz.x+lz.w,sy);ctx.stroke();ctx.restore();});
+          ctx.fillStyle='rgba(20,36,58,.72)';ctx.beginPath();ctx.roundRect(14,14,245,48,9);ctx.fill();ctx.fillStyle='#fff';ctx.font='bold 13px sans-serif';ctx.fillText(theme.name,27,34);ctx.font='11px sans-serif';ctx.fillStyle='#dbeafe';ctx.fillText(si===0?'Move and jump to practice':('SUMMIT '+si+' / 6'),27,50);
+          drawGim(ctx,p.x,c.height-(p.y-camY)-20,{skin:state.playerSkin,color:state.playerColor,name:state.playerName,walkPhase:p.walkPhase,moving:moving&&p.vy===0,lookX:p.lookX,lookY:p.vy>1?-1:p.vy<-2?1:0,squashX:p.squashX,squashY:p.squashY,shadowScale:p.vy===0?1:.5,t});
           rafId=requestAnimationFrame(loop);
         }
         rafId=requestAnimationFrame(loop);
