@@ -2589,6 +2589,11 @@
           if (kind==='pillar') addProp(x+22,y+20,28,58,si+1,'pillar');
           if (kind==='branch') addProp(x+25,y+18,70,12,si+1,'branch');
         }));
+        // Short connecting ledges keep the six summit sections climbable.
+        add(625,1310,145,18,2,'ledge');
+        add(620,2140,150,18,3,'ledge');
+        add(625,2740,145,18,4,'ledge');
+        add(625,3340,145,18,5,'ledge');
         // A few signature props between the ledges make each summit readable.
         addProp(365,245,58,34,1,'barrel'); addProp(565,680,52,34,1,'barrel');
         addProp(340,1125,50,36,2,'coral'); addProp(525,1210,48,30,2,'coral');
@@ -2669,6 +2674,16 @@
             if(p.y< -100){
               p.x=115;p.y=checkpointY+22;p.vx=0;p.vy=0;p.jumps=2;
               Sound.play('wrong');toast('다시 시작 지점으로 돌아왔어요. 발판을 조심해서 건너세요!','error');
+            }
+            // Final-summit laser gates send the climber back to the last checkpoint.
+            if(summitAt(p.y)===5 && Math.sin(t*2.1)>.1){
+              for(const lz of lasers){
+                if(p.x>=lz.x-8&&p.x<=lz.x+lz.w+8&&Math.abs(p.y-lz.y)<15){
+                  p.y=checkpointY+22;p.vy=0;p.vx=0;p.jumps=2;
+                  Sound.play('wrong');toast('레이저에 닿았어요! 체크포인트부터 다시 올라가세요.','error');
+                  break;
+                }
+              }
             }
             // Gentle energy drain while running; answering questions refills energy.
             if(moving && now-lastEnergyTick>450){g.energy=Math.max(0,g.energy-.35);lastEnergyTick=now;updateHud();}
