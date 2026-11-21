@@ -2102,6 +2102,9 @@
         $('classicBody').classList.toggle('hidden', is2d);
         $('arenaBody').classList.toggle('hidden', !is2d);
         $('play2dPill').classList.toggle('hidden', !is2d);
+        $('playCash').style.display = mode === 'dld' ? 'none' : '';
+        $('playStreak').style.display = mode === 'dld' ? 'none' : '';
+        $('playShopBtn').style.display = mode === 'dld' ? 'none' : '';
         $('btn2dFish').classList.toggle('hidden', mode !== 'fishtopia');
         $('btn2dBoat').classList.toggle('hidden', mode !== 'fishtopia');
         $('btn2dFire').classList.toggle('hidden', !['knockback', 'blastball', 'tag'].includes(mode));
@@ -2148,7 +2151,7 @@
           const bagVal = g.fishBag.reduce((a, b) => a + b.val, 0);
           $('play2dPill').textContent = `📍 ${g.zone} · 🪱 Bait ${g.bait} · 🎒 ${g.fishBag.length}/${g.maxBag} (${money(bagVal)})`;
         } else if (g.mode === 'dld') {
-          $('play2dPill').textContent = `⚡ ${Math.floor(g.energy)} · 🏔️ ${Math.floor(g.heightM)}m / 1,000m`;
+          $('play2dPill').textContent = `🏁 ${Math.floor(g.heightM/10)}% · Don't Look Down`;
         } else if (g.mode === 'knockback') {
           $('play2dPill').textContent = `🔫 Ammo ${g.ammo ?? 12} · 💥 Fragility ${g.fragility ?? 0}% · KO ${g.kos ?? 0}`;
         } else if (g.mode === 'blastball') {
@@ -2552,226 +2555,63 @@
          DON'T LOOK DOWN (EXACT 6 NAMED SUMMITS, 1000m, SUMMIT 6 LASERS)
          ======================== */
       function runDLD() {
-        const c = $('canvas2d'), ctx = c.getContext('2d');
-        const WORLD_W = 800, WORLD_TOP = 4800;
-        function fit() {
-          c.width = c.parentElement.clientWidth || 800;
-          c.height = Math.max(440, window.innerHeight - 130);
-        }
-        fit();
-        const SUMMITS = [
-          { name:'Emberwall Ascent', start:0, end:1008, sky:'#69c9ed', ground:'#547d72', accent:'#b47a43', kind:'wood' },
-          { name:'Coral Climb', start:1008, end:1315, sky:'#55bfe8', ground:'#3f9eaa', accent:'#ff8d83', kind:'coral' },
-          { name:'Agent Adventure', start:1315, end:2150, sky:'#80c9e8', ground:'#536c9b', accent:'#d4a85e', kind:'stone' },
-          { name:'Growing Up', start:2150, end:2750, sky:'#9bd9e7', ground:'#789b54', accent:'#b6d46a', kind:'garden' },
-          { name:'Frosty Peaks', start:2750, end:3380, sky:'#b8e8f5', ground:'#7297b5', accent:'#f1fbff', kind:'ice' },
-          { name:'One Way Up', start:3380, end:4800, sky:'#8bb9e8', ground:'#6c729d', accent:'#e5d6ff', kind:'sky' }
+        const c=$('canvas2d'),ctx=c.getContext('2d'),WORLD_END=6200,FLOOR=76;
+        function fit(){c.width=c.parentElement.clientWidth||800;c.height=Math.max(440,window.innerHeight-130);} fit();
+        const p={x:90,y:FLOOR,vx:0,vy:0,jumps:2,walkPhase:0,lookX:1,squashX:1,squashY:1};
+        const sections=[
+          {name:'Summit 1',sky:'#73c9ec',accent:'#986b45',start:0},
+          {name:'Summit 2',sky:'#59bde1',accent:'#ff958c',start:1000},
+          {name:'Summit 3',sky:'#8ac8e8',accent:'#d5ad6d',start:2000},
+          {name:'Summit 4',sky:'#a9d9c0',accent:'#9bbd65',start:3000},
+          {name:'Summit 5',sky:'#c5eaf5',accent:'#f3fbff',start:4000},
+          {name:'Summit 6',sky:'#9ebce9',accent:'#d9d4f7',start:5000}
         ];
-        const p = { x:115, y:55, vx:0, vy:0, jumps:2, walkPhase:0, lookX:1, squashX:1, squashY:1 };
-        const plats = [{ x:35, y:40, w:260, h:28, summit:1, kind:'ground' }];
-        const obstacles = [];
-        const add = (x,y,w,h,summit,kind='platform') => plats.push({x,y,w,h,summit,kind});
-        const addProp = (x,y,w,h,summit,kind) => obstacles.push({x,y,w,h,summit,kind});
-
-        // Six hand-built climbing sections. The route alternates sides and uses
-        // short ledges, narrow beams, logs, pillars and moving-looking set pieces.
-        const routes = [
-          [[300,100,112,'wood'],[485,170,92,'crate'],[620,245,112,'wood'],[470,325,120,'beam'],[285,405,82,'crate'],[115,485,105,'wood'],[250,565,118,'beam'],[455,645,94,'crate'],[610,725,120,'wood'],[440,805,110,'beam'],[235,885,128,'wood'],[65,965,155,'ledge']],
-          [[245,1080,100,'coral'],[425,1160,90,'coral'],[590,1240,150,'ledge']],
-          [[470,1390,100,'stone'],[620,1470,84,'pillar'],[500,1550,110,'stone'],[300,1630,95,'pillar'],[115,1710,120,'stone'],[260,1790,100,'beam'],[450,1870,115,'stone'],[620,1950,90,'pillar'],[465,2030,130,'ledge']],
-          [[290,2240,100,'garden'],[105,2320,120,'branch'],[275,2400,95,'garden'],[470,2480,125,'branch'],[610,2560,105,'garden'],[430,2640,160,'ledge']],
-          [[235,2840,100,'ice'],[70,2920,125,'ice'],[250,3000,92,'beam'],[435,3080,120,'ice'],[615,3160,95,'ice'],[465,3240,150,'ledge']],
-          [[270,3460,110,'sky'],[465,3540,90,'pillar'],[630,3620,115,'sky'],[485,3700,100,'beam'],[285,3780,115,'sky'],[95,3860,90,'pillar'],[245,3940,120,'sky'],[440,4020,100,'beam'],[625,4100,115,'sky'],[455,4180,100,'pillar'],[245,4260,130,'sky'],[70,4340,105,'beam'],[245,4420,115,'sky'],[445,4500,100,'pillar'],[625,4580,115,'sky'],[455,4660,150,'ledge'],[275,4760,250,'finish']]
-        ];
-        routes.forEach((route, si) => route.forEach(([x,y,w,kind]) => {
-          add(x,y,w,kind==='pillar'?22:18,si+1,kind);
-          if (kind==='crate') addProp(x+12,y+18,34,30,si+1,'crate');
-          if (kind==='pillar') addProp(x+22,y+20,28,58,si+1,'pillar');
-          if (kind==='branch') addProp(x+25,y+18,70,12,si+1,'branch');
-        }));
-        // Short connecting ledges keep the six summit sections climbable.
-        add(625,1310,145,18,2,'ledge');
-        add(620,2140,150,18,3,'ledge');
-        add(625,2740,145,18,4,'ledge');
-        add(625,3340,145,18,5,'ledge');
-        // A few signature props between the ledges make each summit readable.
-        addProp(365,245,58,34,1,'barrel'); addProp(565,680,52,34,1,'barrel');
-        addProp(340,1125,50,36,2,'coral'); addProp(525,1210,48,30,2,'coral');
-        addProp(555,1500,35,58,3,'pillar'); addProp(205,1740,42,48,3,'pillar');
-        addProp(385,2380,80,18,4,'branch'); addProp(540,2510,58,42,4,'tree');
-        addProp(335,2970,72,22,5,'ice'); addProp(545,3120,54,38,5,'ice');
-        addProp(570,3590,44,58,6,'pillar'); addProp(150,3890,44,58,6,'pillar');
-        const lasers = [
-          {x:155,y:4310,w:190},{x:430,y:4490,w:190},{x:245,y:4650,w:210}
-        ];
-        const particles = [];
-        let jp=false, lastTime=performance.now(), bestSummit=1, lastEnergyTick=0;
-        const checkpoints = [40,1008,1315,2150,2750,3380];
-        let checkpointY = 40;
-
-        function summitAt(y) {
-          for (let i=SUMMITS.length-1;i>=0;i--) if (y>=SUMMITS[i].start) return i;
-          return 0;
+        const platforms=[{x:0,y:FLOOR,w:520,h:34,kind:'start',section:0}],props=[];
+        let x=390,n=0;
+        while(x<WORLD_END-180){
+          const section=Math.min(5,Math.floor(x/1000)),gap=105+(n%4)*17,w=110+(n%3)*24;
+          const y=FLOOR+((n*47)%4)*28,kind=['ledge','crate','beam','stone'][n%4];
+          platforms.push({x:x+gap,y,w,h:kind==='beam'?14:20,kind,section});
+          if(n%3===1)props.push({x:x+gap+w*.55,y:y+20,kind:section===4?'ice':kind==='crate'?'crate':'pillar'});
+          x+=gap+w;n++;
         }
-        function drawCloud(x,y,scale=1,alpha=.8) {
-          ctx.save(); ctx.globalAlpha=alpha; ctx.fillStyle='#f3fbff';
-          ctx.beginPath(); ctx.arc(x,y,13*scale,0,Math.PI*2);
-          ctx.arc(x+16*scale,y-7*scale,18*scale,0,Math.PI*2);
-          ctx.arc(x+35*scale,y,13*scale,0,Math.PI*2);
-          ctx.fill(); ctx.restore();
+        platforms.push({x:WORLD_END-230,y:FLOOR+80,w:230,h:28,kind:'finish',section:5});
+        const checkpoints=[0,1000,2000,3000,4000,5000],particles=[];
+        let checkpoint=0,bestSection=0,jp=false,last=performance.now(),cameraX=0;
+        function sectionAt(v){return Math.min(5,Math.max(0,Math.floor(v/1000)));}
+        function drawPlatform(pl,sx,sy,theme){
+          ctx.save();let fill=theme.accent;
+          if(pl.kind==='start')fill='#6d8d68';if(pl.kind==='finish')fill='#d7c8ff';
+          if(pl.kind==='crate')fill='#a87649';if(pl.kind==='beam')fill='#806044';if(pl.kind==='stone')fill='#8b929b';
+          ctx.fillStyle=fill;ctx.fillRect(sx,sy,pl.w,pl.h);ctx.fillStyle='rgba(255,255,255,.35)';ctx.fillRect(sx,sy,pl.w,4);
+          ctx.strokeStyle='rgba(25,35,48,.75)';ctx.lineWidth=2;ctx.strokeRect(sx,sy,pl.w,pl.h);
+          if(pl.kind==='crate'){ctx.beginPath();ctx.moveTo(sx+4,sy+3);ctx.lineTo(sx+pl.w-4,sy+pl.h-3);ctx.moveTo(sx+pl.w-4,sy+3);ctx.lineTo(sx+4,sy+pl.h-3);ctx.stroke();}ctx.restore();
         }
-        function drawPlatform(pl, sy, theme) {
-          const x=pl.x, y=sy, w=pl.w, h=pl.h;
-          ctx.save();
-          if (pl.kind==='beam' || pl.kind==='branch') {
-            ctx.fillStyle=pl.kind==='branch'?'#76543a':'#6d747b';
-            ctx.fillRect(x,y,w,h);
-            ctx.fillStyle=pl.kind==='branch'?'#b58a59':'#aeb7bf';
-            ctx.fillRect(x,y,w,4);
-            ctx.strokeStyle='rgba(22,32,45,.65)'; ctx.lineWidth=2; ctx.strokeRect(x,y,w,h);
-            if (pl.kind==='beam') for(let k=18;k<w;k+=28){ctx.strokeStyle='rgba(30,41,59,.28)';ctx.beginPath();ctx.moveTo(x+k,y+3);ctx.lineTo(x+k-8,y+h-2);ctx.stroke();}
-          } else {
-            let fill=theme.accent;
-            if(pl.kind==='ground') fill='#577b61';
-            if(pl.kind==='crate') fill='#9b6a3e';
-            if(pl.kind==='pillar') fill='#8b929c';
-            if(pl.kind==='ledge') fill=theme.accent;
-            ctx.fillStyle=fill; ctx.fillRect(x,y,w,h);
-            ctx.fillStyle='rgba(255,255,255,.32)'; ctx.fillRect(x,y,w,4);
-            ctx.strokeStyle='rgba(22,32,45,.68)'; ctx.lineWidth=2; ctx.strokeRect(x,y,w,h);
-            if(pl.kind==='crate'){ctx.strokeStyle='rgba(55,35,20,.65)';ctx.beginPath();ctx.moveTo(x+4,y+3);ctx.lineTo(x+w-4,y+h-3);ctx.moveTo(x+w-4,y+3);ctx.lineTo(x+4,y+h-3);ctx.stroke();}
-          }
-          ctx.restore();
-        }
-        function loop(now) {
-          const g=state.game; if(!g||!g.running||g.mode!=='dld') return;
-          const dt=Math.min(.05,(now-lastTime)/1000); lastTime=now; const t=now/1000;
-          let moving=false;
+        function loop(now){
+          const g=state.game;if(!g||!g.running||g.mode!=='dld')return;
+          const dt=Math.min(.05,(now-last)/1000);last=now;const t=now/1000;let moving=false;
           if(!g.qOpen){
-            if(keys['a']||keys['arrowleft']||pad.left){p.vx=-4.2;p.lookX=-1;moving=true;}
-            else if(keys['d']||keys['arrowright']||pad.right){p.vx=4.2;p.lookX=1;moving=true;}
-            else p.vx*=.82;
+            if(keys['a']||keys['arrowleft']||pad.left){p.vx=-4.1;p.lookX=-1;moving=true;}
+            else if(keys['d']||keys['arrowright']||pad.right){p.vx=4.1;p.lookX=1;moving=true;}else p.vx*=.82;
             if(moving)p.walkPhase+=dt*14;
-            const wj=keys['w']||keys['arrowup']||keys[' ']||pad.up;
-            if(wj&&!jp&&p.jumps>0&&g.energy>=5){
-              p.vy=11.2;p.jumps--;p.squashX=.84;p.squashY=1.18;g.energy-=5;
-              Sound.play('jump');updateHud();
-              for(let k=0;k<5;k++)particles.push({x:p.x+(Math.random()-.5)*18,y:p.y-8,vx:(Math.random()-.5)*2,vy:-Math.random()*2,life:20});
-            }
-            jp=wj;
-            p.vy-=.46;
-            const prevY=p.y;
-            p.x=Math.max(18,Math.min(WORLD_W-18,p.x+p.vx));
-            p.y+=p.vy;
-            if(p.vy<=0){
-              for(const pl of plats){
-                if(p.x+10>=pl.x&&p.x-10<=pl.x+pl.w&&prevY>=pl.y&&p.y<=pl.y){
-                  if(p.vy<-3){p.squashX=1.18;p.squashY=.84;}
-                  p.y=pl.y;p.vy=0;p.jumps=2;break;
-                }
-              }
-            }
-            if(p.y< -100){
-              p.x=115;p.y=checkpointY+22;p.vx=0;p.vy=0;p.jumps=2;
-              Sound.play('wrong');toast('다시 시작 지점으로 돌아왔어요. 발판을 조심해서 건너세요!','error');
-            }
-            // Final-summit laser gates send the climber back to the last checkpoint.
-            if(summitAt(p.y)===5 && Math.sin(t*2.1)>.1){
-              for(const lz of lasers){
-                if(p.x>=lz.x-8&&p.x<=lz.x+lz.w+8&&Math.abs(p.y-lz.y)<15){
-                  p.y=checkpointY+22;p.vy=0;p.vx=0;p.jumps=2;
-                  Sound.play('wrong');toast('레이저에 닿았어요! 체크포인트부터 다시 올라가세요.','error');
-                  break;
-                }
-              }
-            }
-            // Gentle energy drain while running; answering questions refills energy.
-            if(moving && now-lastEnergyTick>450){g.energy=Math.max(0,g.energy-.35);lastEnergyTick=now;updateHud();}
+            const jump=keys['w']||keys['arrowup']||keys[' ']||pad.up;
+            if(jump&&!jp&&p.jumps>0&&g.energy>=5){p.vy=11.4;p.jumps--;g.energy-=5;p.squashX=.84;p.squashY=1.18;Sound.play('jump');updateHud();}
+            jp=jump;p.vy-=.48;const oldY=p.y;p.x=Math.max(12,Math.min(WORLD_END-35,p.x+p.vx));p.y+=p.vy;
+            if(p.vy<=0)for(const pl of platforms)if(p.x+12>=pl.x&&p.x-12<=pl.x+pl.w&&oldY>=pl.y&&p.y<=pl.y){p.y=pl.y;p.vy=0;p.jumps=2;break;}
+            if(p.y<-80){p.x=checkpoint+70;p.y=FLOOR+20;p.vx=0;p.vy=0;p.jumps=2;toast('체크포인트로 돌아왔어요!','error');}
+            const si=sectionAt(p.x);if(si>bestSection){bestSection=si;checkpoint=checkpoints[si];toast(sections[si].name+' 도착!','success');}
+            g.heightM=Math.min(1000,Math.round(p.x/WORLD_END*1000));
+            if(p.x>=WORLD_END-100){g.heightM=1000;Sound.play('correct');toast('코스 완주!','success');endGame();return;}
             p.squashX+=(1-p.squashX)*.18;p.squashY+=(1-p.squashY)*.18;
-            const si=summitAt(p.y);
-            if(si+1>bestSummit){
-              bestSummit=si+1;
-              if(g.checkpoints){checkpointY=SUMMITS[si].start;toast('체크포인트 도착: Summit '+(si+1),'success');}
-              toast('Summit '+(si+1)+' · '+SUMMITS[si].name,'success');
-            }
-            g.heightM=Math.min(1000,Math.max(0,Math.round(p.y/4.8)));
-            if(g.heightM>g.maxHeightM+5){g.maxHeightM=g.heightM;updateHud();}
-            if(p.y>=WORLD_TOP){g.heightM=1000;Sound.play('correct');toast('🏁 Climb Complete! 정상 도착!','success');endGame();return;}
           }
-
-          const si=summitAt(p.y), theme=SUMMITS[si];
-          const camY=Math.max(0,p.y-c.height*.43);
-          const grad=ctx.createLinearGradient(0,0,0,c.height);
-          grad.addColorStop(0,theme.sky);grad.addColorStop(1,si===4?'#e7f8ff':'#d7f2fb');
-          ctx.fillStyle=grad;ctx.fillRect(0,0,c.width,c.height);
-          // Repeating soft cloud field, similar to a bright high-altitude course.
-          for(let i=0;i<15;i++){
-            const wx=(i*173+((i%3)*31))%900;
-            const wy=180+i*265;
-            const sy=c.height-(wy-camY);
-            if(sy>-50&&sy<c.height+50)drawCloud(wx,sy,.72+(i%3)*.16,.45);
-          }
-          // Subtle distant mountain silhouettes.
-          ctx.fillStyle='rgba(255,255,255,.18)';
-          ctx.beginPath();ctx.moveTo(0,c.height);
-          for(let x=0;x<=c.width;x+=80)ctx.lineTo(x,c.height-70-((x*17)%75));
-          ctx.lineTo(c.width,c.height);ctx.closePath();ctx.fill();
-
-          const offX=(c.width-WORLD_W)/2;
-          ctx.save();ctx.translate(offX,0);
-          // Start line and green GO flags.
-          if(camY<220){
-            const fy=c.height-(40-camY);
-            [75,112,149].forEach((fx)=>{ctx.fillStyle='#3c4148';ctx.fillRect(fx,fy-42,4,42);ctx.fillStyle='#29bd68';ctx.fillRect(fx+4,fy-40,28,17);ctx.fillStyle='#fff';ctx.font='bold 9px sans-serif';ctx.fillText('GO!',fx+7,fy-28);});
-          }
-          plats.forEach(pl=>{
-            const sy=c.height-(pl.y-camY);
-            if(sy<-70||sy>c.height+70)return;
-            drawPlatform(pl,sy,SUMMITS[pl.summit-1]);
-          });
-          obstacles.forEach(ob=>{
-            const sy=c.height-(ob.y-camY)-ob.h;
-            if(sy<-90||sy>c.height+90)return;
-            ctx.save();
-            if(ob.kind==='crate'){
-              ctx.fillStyle='#9b673e';ctx.fillRect(ob.x,sy,ob.w,ob.h);ctx.strokeStyle='#513b2a';ctx.lineWidth=3;ctx.strokeRect(ob.x,sy,ob.w,ob.h);
-              ctx.beginPath();ctx.moveTo(ob.x+4,sy+4);ctx.lineTo(ob.x+ob.w-4,sy+ob.h-4);ctx.moveTo(ob.x+ob.w-4,sy+4);ctx.lineTo(ob.x+4,sy+ob.h-4);ctx.stroke();
-            }else if(ob.kind==='pillar'){
-              ctx.fillStyle='#9299a5';ctx.fillRect(ob.x,sy,ob.w,ob.h);ctx.fillStyle='#cbd5e1';ctx.fillRect(ob.x-5,sy,ob.w+10,8);ctx.fillStyle='rgba(15,23,42,.25)';ctx.fillRect(ob.x+ob.w-7,sy,7,ob.h);
-            }else if(ob.kind==='barrel'){
-              ctx.fillStyle='#8b5e3c';ctx.beginPath();ctx.roundRect(ob.x,sy,ob.w,ob.h,8);ctx.fill();ctx.strokeStyle='#493323';ctx.stroke();
-              ctx.fillStyle='#c49a6c';ctx.fillRect(ob.x+3,sy+8,ob.w-6,4);ctx.fillRect(ob.x+3,sy+ob.h-12,ob.w-6,4);
-            }else if(ob.kind==='branch'){
-              ctx.fillStyle='#795333';ctx.fillRect(ob.x,sy,ob.w,ob.h);ctx.fillStyle='#9fca6a';ctx.beginPath();ctx.arc(ob.x+ob.w*.3,sy-8,12,0,Math.PI*2);ctx.arc(ob.x+ob.w*.7,sy-9,13,0,Math.PI*2);ctx.fill();
-            }else if(ob.kind==='tree'){
-              ctx.fillStyle='#76543a';ctx.fillRect(ob.x+ob.w/2-6,sy+12,12,ob.h-12);ctx.fillStyle='#70a85b';ctx.beginPath();ctx.arc(ob.x+ob.w/2,sy+12,ob.w*.55,0,Math.PI*2);ctx.fill();
-            }else{
-              ctx.fillStyle='#e9fbff';ctx.beginPath();ctx.moveTo(ob.x,sy+ob.h);ctx.lineTo(ob.x+ob.w*.2,sy);ctx.lineTo(ob.x+ob.w*.8,sy);ctx.lineTo(ob.x+ob.w,sy+ob.h);ctx.closePath();ctx.fill();ctx.strokeStyle='#80c7e6';ctx.stroke();
-            }
-            ctx.restore();
-          });
-          // Laser gates are limited to the final summit.
-          if(si===5&&Math.sin(t*2.1)>.1){
-            lasers.forEach(lz=>{
-              const sy=c.height-(lz.y-camY);
-              if(sy<-30||sy>c.height+30)return;
-              ctx.save();ctx.shadowColor='#ff344f';ctx.shadowBlur=12;ctx.strokeStyle='#ff405d';ctx.lineWidth=5;
-              ctx.beginPath();ctx.moveTo(lz.x,sy);ctx.lineTo(lz.x+lz.w,sy);ctx.stroke();ctx.restore();
-              ctx.fillStyle='#3b4357';ctx.fillRect(lz.x-5,sy-10,8,20);ctx.fillRect(lz.x+lz.w-3,sy-10,8,20);
-            });
-          }
-          // Summit marker and height sign.
-          ctx.fillStyle='rgba(20,36,58,.72)';ctx.beginPath();ctx.roundRect(14,14,218,48,10);ctx.fill();
-          ctx.fillStyle='#fff';ctx.textAlign='left';ctx.font='bold 13px sans-serif';ctx.fillText('SUMMIT '+(si+1)+' / 6',27,33);
-          ctx.font='11px sans-serif';ctx.fillStyle='#dbeafe';ctx.fillText(theme.name,27,50);
-          for(let i=particles.length-1;i>=0;i--){
-            const pt=particles[i];pt.x+=pt.vx;pt.y+=pt.vy;pt.life--;
-            const sy=c.height-(pt.y-camY);ctx.fillStyle='rgba(255,255,255,'+(pt.life/20)+')';
-            ctx.beginPath();ctx.arc(pt.x,sy,3,0,Math.PI*2);ctx.fill();if(pt.life<=0)particles.splice(i,1);
-          }
-          const py=c.height-(p.y-camY)-20;
-          drawGim(ctx,p.x,py,{skin:state.playerSkin,color:state.playerColor,name:state.playerName,walkPhase:p.walkPhase,moving:moving&&p.vy===0,lookX:p.lookX,lookY:p.vy>1?-1:p.vy<-2?1:0,squashX:p.squashX,squashY:p.squashY,shadowScale:p.vy===0?1:.5,t});
-          ctx.restore();
+          const si=sectionAt(p.x),theme=sections[si];cameraX=Math.max(0,Math.min(WORLD_END-c.width,p.x-c.width*.34));
+          const grad=ctx.createLinearGradient(0,0,0,c.height);grad.addColorStop(0,theme.sky);grad.addColorStop(1,'#e6f4fa');ctx.fillStyle=grad;ctx.fillRect(0,0,c.width,c.height);
+          for(let i=0;i<12;i++){const wx=i*260+80-cameraX*.28,wy=c.height-100-(i%3)*24;ctx.fillStyle='rgba(255,255,255,.22)';ctx.beginPath();ctx.arc(wx,wy,55,0,Math.PI*2);ctx.arc(wx+48,wy+4,40,0,Math.PI*2);ctx.fill();}
+          for(let i=0;i<8;i++){const wx=i*210-cameraX*.55;ctx.fillStyle='rgba(63,91,116,.14)';ctx.beginPath();ctx.moveTo(wx,c.height);ctx.lineTo(wx+100,c.height-150-(i%3)*25);ctx.lineTo(wx+230,c.height);ctx.fill();}
+          platforms.forEach(pl=>{const sx=pl.x-cameraX,sy=c.height-pl.y;if(sx+pl.w>-30&&sx<c.width+30)drawPlatform(pl,sx,sy,sections[pl.section]);});
+          props.forEach(ob=>{const sx=ob.x-cameraX,sy=c.height-ob.y-32;if(sx<-60||sx>c.width+60)return;ctx.fillStyle=ob.kind==='ice'?'#e8fbff':ob.kind==='crate'?'#96623c':'#8c969f';if(ob.kind==='pillar'){ctx.fillRect(sx,sy,26,32);ctx.fillRect(sx-5,sy,36,6);}else if(ob.kind==='crate'){ctx.fillRect(sx,sy,32,32);ctx.strokeStyle='#513b2a';ctx.strokeRect(sx,sy,32,32);}else{ctx.beginPath();ctx.moveTo(sx,sy+32);ctx.lineTo(sx+16,sy);ctx.lineTo(sx+32,sy+32);ctx.closePath();ctx.fill();}});
+          drawGim(ctx,p.x-cameraX,c.height-p.y-20,{skin:state.playerSkin,color:state.playerColor,name:state.playerName,walkPhase:p.walkPhase,moving:moving&&p.vy===0,lookX:p.lookX,lookY:p.vy>1?-1:p.vy<-2?1:0,squashX:p.squashX,squashY:p.squashY,shadowScale:p.vy===0?1:.5,t});
+          ctx.fillStyle='rgba(20,36,58,.72)';ctx.beginPath();ctx.roundRect(14,14,165,44,9);ctx.fill();ctx.fillStyle='#fff';ctx.font='bold 13px sans-serif';ctx.textAlign='left';ctx.fillText(theme.name+' · '+(si+1)+'/6',26,41);
           rafId=requestAnimationFrame(loop);
         }
         rafId=requestAnimationFrame(loop);
