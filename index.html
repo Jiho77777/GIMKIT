@@ -998,3 +998,2336 @@
       <section id="tab-kits" class="hidden">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; gap:12px; flex-wrap:wrap;">
           <h1 class="gk-page-title" style="margin-bottom:0;">Kits</h1>
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <input class="input" id="kitSearch" type="search" placeholder="Search kits..." style="max-width:220px;" />
+            <button class="btn btn-green" id="newKitBtn">+ New Kit</button>
+          </div>
+        </div>
+        <div id="kitsList"></div>
+      </section>
+
+      <!-- TAB: JOIN (EXACT gimkit.com/join) -->
+      <section id="tab-join" class="hidden" style="background:#2b2d38; border-radius:16px; padding:56px 20px; min-height:460px; display:flex; align-items:center; justify-content:center;">
+        <div style="max-width:400px; width:100%; background:#ffffff; border-radius:14px; padding:34px 28px; text-align:center; box-shadow:0 16px 40px rgba(0,0,0,0.32);">
+          <div style="font-size:2rem; font-weight:900; letter-spacing:-0.05em; color:#000000; margin-bottom:18px;">GIMKIT</div>
+          <input class="input" id="joinCode" maxlength="6" placeholder="Game Code" style="margin-bottom:10px; text-align:center; font-size:1.25rem; font-weight:800; letter-spacing:3px; padding:12px;" />
+          <input class="input" id="joinName" value="플레이어" maxlength="16" placeholder="Nickname" style="margin-bottom:14px; text-align:center; font-weight:700;" />
+          <button class="btn btn-navy" id="joinBtn" style="width:100%; padding:13px; font-size:1rem; background:#6d28d9; border-radius:10px;">Join</button>
+          <div id="joinMsg" class="hidden" style="margin-top:14px; padding:12px; border-radius:10px; background:#ecfdf5; color:#065f46; font-weight:700; font-size:0.9rem;"></div>
+        </div>
+      </section>
+
+      <!-- TAB: COSMETICS / REWARDS -->
+      <section id="tab-cosmetics" class="hidden">
+        <h1 class="gk-page-title">Rewards &amp; Cosmetics</h1>
+        <div style="background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:24px; max-width:520px; box-shadow:0 4px 14px rgba(0,0,0,0.05);">
+          <div style="display:flex; align-items:center; gap:16px; margin-bottom:18px;">
+            <div class="gim" id="cosGim" style="width:52px; height:64px; background:#1e0e62;">
+              <div class="gim-eyes"><span class="gim-eye"></span><span class="gim-eye"></span></div>
+            </div>
+            <div>
+              <div id="cosNameLabel" style="font-weight:800; font-size:1.1rem;">플레이어</div>
+              <div style="font-size:0.84rem; color:#6b7280;">Selected Gim</div>
+            </div>
+          </div>
+          <label style="display:block; font-weight:700; font-size:0.84rem; margin-bottom:6px;">Nickname</label>
+          <input class="input" id="cosNameInput" value="플레이어" maxlength="16" style="margin-bottom:16px;" />
+          <label style="display:block; font-weight:700; font-size:0.84rem; margin-bottom:8px;">Gim Color</label>
+          <div id="cosColors" style="display:flex; gap:10px; flex-wrap:wrap;"></div>
+        </div>
+      </section>
+
+      <!-- TAB: IMPORT / CREATIVE -->
+      <section id="tab-import" class="hidden">
+        <h1 class="gk-page-title">Creative &amp; Kit Import</h1>
+        <div style="background:#fff; border:1px solid #e5e7eb; border-radius:12px; padding:24px; max-width:680px; box-shadow:0 4px 14px rgba(0,0,0,0.05);">
+          <label style="display:block; font-weight:700; font-size:0.84rem; margin-bottom:6px;">Kit Name</label>
+          <input class="input" id="impName" value="Imported Kit" style="margin-bottom:12px;" />
+          <label style="display:block; font-weight:700; font-size:0.84rem; margin-bottom:6px;">Paste Quizlet (Tab), CSV, or JSON</label>
+          <textarea class="textarea" id="impRaw" placeholder="apple&#9;사과&#10;banana&#9;바나나&#10;grape&#9;포도"></textarea>
+          <button class="btn btn-green" id="impRunBtn" style="margin-top:12px;">Import Kit</button>
+        </div>
+      </section>
+      <!-- TAB: DISCOVERY (gimkit.com/discovery) -->
+      <section id="tab-discovery" class="hidden">
+        <h1 class="gk-page-title" style="margin-bottom:4px;">Discovery</h1>
+        <p style="font-style:italic; color:#374151; font-size:0.9rem; margin-bottom:16px;">Search from our library of over 30,000,000 kits!</p>
+        <div class="disc-search-bar">
+          <input id="discSearchInput" type="search" placeholder="Search for kits..." />
+          <button class="disc-search-btn" id="discSearchBtn">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </button>
+        </div>
+        <div class="disc-grid" id="discGrid"></div>
+      </section>
+
+      <!-- TAB: REWARDS (gimkit.com/rewards - Home / Locker / Shop Packs) -->
+      <section id="tab-rewards" class="hidden">
+        <div id="rewardsSubHome">
+          <div class="rewards-card">
+            <div class="rewards-gim-badge">
+              <div class="gim" id="rewGimBadge" style="background:#1e0e62; transform:scale(0.95);">
+                <div class="gim-eyes"><span class="gim-eye"></span><span class="gim-eye"></span></div>
+              </div>
+            </div>
+            <div style="font-style:italic; font-size:0.95rem; color:#e2e8f0;">Season 1</div>
+            <div style="font-size:2.1rem; font-weight:900; font-style:italic; margin:2px 0 12px;">LEVEL <span id="rewLevelNum">19</span></div>
+            <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:800;">
+              <span id="rewXpText">300/1,000XP</span>
+              <span id="rewXpRemain">700 XP TO LEVEL 20</span>
+            </div>
+            <div class="xp-bar-bg"><div class="xp-bar-fill" id="rewXpBar" style="width:30%;"></div></div>
+            <p style="font-size:0.84rem; color:#cbd5e1; line-height:1.5;">
+              Earn XP to level up. Each time you level up, you'll earn 100 GimBucks which you can use to purchase items in the Shop.
+            </p>
+          </div>
+          <div style="max-width:560px; margin:0 auto;">
+            <div style="font-weight:900; font-style:italic; font-size:1.15rem; margin-bottom:8px;">LIMITS</div>
+            <div style="border:2px solid rgba(255,255,255,0.3); border-radius:12px; padding:18px 22px; background:rgba(25,13,74,0.65);">
+              <div style="font-weight:800;">Weekly XP</div>
+              <div style="font-size:0.78rem; color:#cbd5e1; font-style:italic; margin-bottom:8px;">Resets on Wednesdays at 2:00pm EST</div>
+              <div class="xp-bar-bg" style="height:22px; margin:0;"><div class="xp-bar-fill" id="rewWeeklyBar" style="width:12%;"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="rewardsSubPackDetail" class="hidden">
+          <div class="pack-detail-wrap" id="packDetailContainer"></div>
+        </div>
+        <div id="rewardsSubShop" class="hidden">
+          <div style="max-width:820px; margin:0 auto;">
+            <h2 style="font-size:1.7rem; font-weight:900; font-style:italic;">PACKS</h2>
+            <p style="color:#cbd5e1; font-size:0.9rem;">Open packs to earn new items that you can use in-game!</p>
+          </div>
+          <div class="packs-grid" id="packsGrid"></div>
+        </div>
+      </section>
+
+      <!-- TAB: CREATIVE (gimkit.com/creative) -->
+      <section id="tab-creative" class="hidden">
+        <div style="text-align:center; margin-top:8px;">
+          <div style="font-weight:900; font-size:1rem; letter-spacing:1px;">GIMKIT</div>
+          <h1 style="font-size:2.4rem; font-weight:900; font-style:italic; letter-spacing:-0.02em;">CREATIVE</h1>
+          <p style="color:#cbd5e1; font-size:0.9rem; max-width:540px; margin:6px auto 20px;">
+            Welcome to Gimkit Creative, where you can build your very own game modes, maps, &amp; worlds!
+          </p>
+        </div>
+        <div class="creative-box" style="display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+          <div style="display:flex; align-items:center; gap:16px;">
+            <div class="gim" style="background:#0284c7; width:46px; height:54px;">
+              <div class="gim-eyes"><span class="gim-eye"></span><span class="gim-eye"></span></div>
+            </div>
+            <div>
+              <div style="font-weight:800;">Complete the Gimkit Creative tutorial and receive the Blueprint Gim!</div>
+              <div style="font-size:0.82rem; color:#cbd5e1; font-style:italic;">Click Start to test your 2D movement &amp; map builder.</div>
+            </div>
+          </div>
+          <button class="btn btn-green" id="creativeTutBtn">Start Tutorial</button>
+        </div>
+        <div class="creative-box">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <div>
+              <div style="font-weight:900; font-style:italic; font-size:1.15rem;">MY MAPS</div>
+              <div style="font-size:0.8rem; color:#cbd5e1;" id="creativeSlotsText">1/3 slots used</div>
+            </div>
+            <button class="btn btn-green btn-sm" id="creativeNewMapBtn">Create New Map</button>
+          </div>
+          <div id="creativeMapsList" style="display:flex; flex-direction:column; gap:8px;"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ===========================
+       2. MODE PICKER
+       =========================== -->
+  <div id="screen-modes" class="gk-purple-bg hidden">
+    <div style="max-width:1060px; margin:0 auto;">
+      <button class="btn btn-outline btn-sm" id="modesBackBtn">← Back to Kits</button>
+      <h1 style="font-size:1.9rem; font-weight:900; margin-top:12px;">Choose a Mode</h1>
+      <p id="modesKitTitle" style="color:#c4b5fd; font-size:0.95rem;"></p>
+    </div>
+    <div class="mode-grid">
+      <div class="mode-tile" data-mode="classic">
+        <span class="mode-tag">CLASSIC</span>
+        <h2 style="font-size:1.3rem;">Classic</h2>
+        <p style="color:#d1d5db; font-size:0.88rem;">질문에 답해 상금을 벌고, 상점에서 Money Per Question · Streak · Multiplier · Powerups · Themes를 구매하세요.</p>
+      </div>
+      <div class="mode-tile" data-mode="lava">
+        <span class="mode-tag" style="background:rgba(239,68,68,0.25); color:#fca5a5;">TEAM / SURVIVAL</span>
+        <h2 style="font-size:1.3rem;">The Floor Is Lava</h2>
+        <p style="color:#d1d5db; font-size:0.88rem;">용암이 차오르며 매초 상금이 감소합니다. 빠른 정답과 업그레이드로 살아남으세요!</p>
+      </div>
+      <div class="mode-tile" data-mode="fishtopia">
+        <span class="mode-tag" style="background:rgba(56,189,248,0.25); color:#7dd3fc;">2D MODE</span>
+        <h2 style="font-size:1.3rem;">Fishtopia</h2>
+        <p style="color:#d1d5db; font-size:0.88rem;">문제로 미끼(Bait)를 얻고, 보트 티켓으로 Purple Pond · Lucky Lake에 가서 $5,000 GimFish를 낚으세요!</p>
+      </div>
+      <div class="mode-tile" data-mode="dld">
+        <span class="mode-tag" style="background:rgba(168,85,247,0.25); color:#e9d5ff;">2D PLATFORMER</span>
+        <h2 style="font-size:1.3rem;">Don't Look Down</h2>
+        <p style="color:#d1d5db; font-size:0.88rem;">문제를 풀어 에너지를 모으고 2단 점프로 6개 Summit 정상까지 올라가세요!</p>
+      </div>
+      <div class="mode-tile" data-mode="knockback">
+        <span class="mode-tag" style="background:rgba(244,63,94,0.25); color:#fda4af;">2D PLATFORMER</span>
+        <h2 style="font-size:1.3rem;">Knockback</h2>
+        <p style="color:#d1d5db; font-size:0.88rem;">가젯으로 상대를 맞혀 Fragility(%)를 높이고 플랫폼 밖으로 날려 KO시키세요!</p>
+      </div>
+      <div class="mode-tile" data-mode="blastball">
+        <span class="mode-tag" style="background:rgba(16,185,129,0.25); color:#6ee7b7;">2D SPORTS</span>
+        <h2 style="font-size:1.3rem;">Blastball</h2>
+        <p style="color:#d1d5db; font-size:0.88rem;">Gimchester United vs Kitcelona! 블래스터로 공을 날려 상대 골대에 골을 넣으세요!</p>
+      </div>
+      <div class="mode-tile" data-mode="tag">
+        <span class="mode-tag" style="background:rgba(245,158,11,0.25); color:#fcd34d;">2D ARENA</span>
+        <h2 style="font-size:1.3rem;">Tag: Domination</h2>
+        <p style="color:#d1d5db; font-size:0.88rem;">상대 Gim을 태그하고 중앙 거점(A·B·C)을 점령해 점수와 상금을 쌓으세요!</p>
+      </div>
+      <div class="mode-tile" data-mode="ctf">
+        <span class="mode-tag" style="background:rgba(59,130,246,0.25); color:#93c5fd;">2D TEAM</span>
+        <h2 style="font-size:1.3rem;">Capture The Flag</h2>
+        <p style="color:#d1d5db; font-size:0.88rem;">상대 진영의 깃발을 빼앗아 우리 팀 기지로 무사히 가져오세요!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===========================
+       3. HOST LOBBY
+       =========================== -->
+  <div id="screen-lobby" class="gk-purple-bg hidden">
+    <div style="max-width:1060px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+      <button class="btn btn-outline btn-sm" id="lobbyBackBtn">← Modes</button>
+      <div style="display:flex; gap:10px;">
+        <button class="btn btn-navy btn-sm" id="lobbyAddBotBtn" style="border:1px solid rgba(255,255,255,0.25);">+ Add AI Bot</button>
+        <button class="btn btn-green" id="lobbyStartBtn" style="padding:11px 26px;">Start Game ▶</button>
+      </div>
+    </div>
+
+    <div class="lobby-header-card">
+      <div style="font-size:0.82rem; color:#c4b5fd; font-weight:700;">JOIN AT GIMKIT.COM/JOIN</div>
+      <div class="lobby-code" id="lobbyCodeNum">482 910</div>
+      <div id="lobbySubInfo" style="font-size:0.86rem; color:#e5e7eb;"></div>
+    </div>
+
+    <div style="text-align:center; font-weight:700; color:#c4b5fd;">Players (<span id="lobbyCount">1</span>)</div>
+    <div class="lobby-grid" id="lobbyGrid"></div>
+  </div>
+
+  <!-- ===========================
+       4. ACTIVE GAMEPLAY
+       =========================== -->
+  <div id="screen-play" class="play-screen hidden">
+    <div class="play-topbar">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span class="play-cash" id="playCash">$0</span>
+        <span id="playStreak" style="font-size:0.88rem; background:rgba(255,255,255,0.12); padding:4px 10px; border-radius:999px; font-weight:700;">🔥 0</span>
+        <span id="play2dPill" class="hidden" style="font-size:0.85rem; background:rgba(56,189,248,0.2); color:#7dd3fc; padding:4px 10px; border-radius:999px; font-weight:700;"></span>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <span id="playTimer" style="font-weight:800; font-size:1.1rem; font-variant-numeric:tabular-nums; margin-right:4px;">03:00</span>
+        <button class="btn btn-sm" id="playShopBtn" style="background:rgba(255,255,255,0.14); color:#fff;">🛒 Shop</button>
+        <button class="btn btn-sm" id="playRankBtn" style="background:rgba(255,255,255,0.14); color:#fff;">🏆 Rank</button>
+        <button class="btn btn-sm" id="playMuteBtn" style="background:rgba(255,255,255,0.14); color:#fff;">🔊</button>
+        <button class="btn btn-red btn-sm" id="playQuitBtn">End</button>
+      </div>
+    </div>
+
+    <div id="classicBody" style="flex:1; display:flex; flex-direction:column;"></div>
+
+    <div id="arenaBody" class="arena-wrap hidden">
+      <canvas id="canvas2d"></canvas>
+      <div class="hud-2d-bar">
+        <div class="dpad">
+          <div></div><button class="dpad-btn" data-d="up">▲</button><div></div>
+          <button class="dpad-btn" data-d="left">◀</button><button class="dpad-btn" data-d="down">▼</button><button class="dpad-btn" data-d="right">▶</button>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn btn-navy" id="btn2dQuiz">❓ Answer Questions (E)</button>
+          <button class="btn btn-green hidden" id="btn2dFish">🎣 Fish (F)</button>
+          <button class="btn btn-outline hidden" id="btn2dBoat">⛵ Boat Tickets</button>
+          <button class="btn btn-red hidden" id="btn2dFire">💥 Fire / Tag (F)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===========================
+       5. SUMMARY
+       =========================== -->
+  <div id="screen-summary" class="gk-purple-bg hidden">
+    <div style="max-width:640px; margin:30px auto; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.18); border-radius:20px; padding:30px; text-align:center;">
+      <div style="font-size:2.8rem;">🏆</div>
+      <h1 style="font-size:2rem; font-weight:900; margin:6px 0;">Game Complete!</h1>
+      <p id="sumPlace" style="color:#c4b5fd; margin-bottom:20px;"></p>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:20px;">
+        <div style="background:rgba(255,255,255,0.08); padding:14px; border-radius:12px;">
+          <div style="font-size:0.78rem; color:#d1d5db;">Cash</div>
+          <div id="sumCash" style="font-size:1.35rem; font-weight:900; color:#34d399;">$0</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.08); padding:14px; border-radius:12px;">
+          <div style="font-size:0.78rem; color:#d1d5db;">Accuracy</div>
+          <div id="sumAcc" style="font-size:1.35rem; font-weight:900; color:#93c5fd;">0%</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.08); padding:14px; border-radius:12px;">
+          <div style="font-size:0.78rem; color:#d1d5db;">Best Streak</div>
+          <div id="sumBest" style="font-size:1.35rem; font-weight:900; color:#fbbf24;">0</div>
+        </div>
+      </div>
+      <div id="sumList" style="display:flex; flex-direction:column; gap:8px; text-align:left; margin-bottom:20px;"></div>
+      <div style="display:flex; gap:10px; justify-content:center;">
+        <button class="btn btn-green" id="sumAgainBtn">Play Again</button>
+        <button class="btn btn-outline" id="sumDashBtn">Back to Kits</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL & TOAST -->
+  <div id="modalBackdrop" class="modal-backdrop hidden">
+    <div id="modalBox" class="modal-box"></div>
+  </div>
+  <div id="toastStack" class="toast-stack"></div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* ========================
+         AUDIO
+         ======================== */
+      const Sound = {
+        ctx: null, muted: false,
+        init() {
+          if (!this.ctx) {
+            const C = window.AudioContext || window.webkitAudioContext;
+            if (C) this.ctx = new C();
+          }
+          if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume().catch(() => {});
+        },
+        play(type) {
+          if (this.muted) return;
+          this.init();
+          if (!this.ctx) return;
+          const t = this.ctx.currentTime, o = this.ctx.createOscillator(), g = this.ctx.createGain();
+          o.connect(g); g.connect(this.ctx.destination);
+          if (type === 'correct') {
+            o.type = 'triangle'; o.frequency.setValueAtTime(523, t); o.frequency.setValueAtTime(659, t + 0.06); o.frequency.setValueAtTime(784, t + 0.12);
+            g.gain.setValueAtTime(0.15, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.26); o.start(t); o.stop(t + 0.26);
+          } else if (type === 'wrong') {
+            o.type = 'sawtooth'; o.frequency.setValueAtTime(200, t); o.frequency.linearRampToValueAtTime(125, t + 0.22);
+            g.gain.setValueAtTime(0.14, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.24); o.start(t); o.stop(t + 0.24);
+          } else if (type === 'buy') {
+            o.type = 'sine'; o.frequency.setValueAtTime(880, t); o.frequency.setValueAtTime(1174, t + 0.06);
+            g.gain.setValueAtTime(0.14, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.18); o.start(t); o.stop(t + 0.18);
+          } else if (type === 'jump') {
+            o.type = 'sine'; o.frequency.setValueAtTime(340, t); o.frequency.exponentialRampToValueAtTime(680, t + 0.12);
+            g.gain.setValueAtTime(0.12, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.13); o.start(t); o.stop(t + 0.13);
+          }
+        }
+      };
+
+      /* ========================
+         DATA & KITS
+         ======================== */
+      const STORAGE_KEY = 'gimkit_v3_kits';
+      const COLORS = ['#1e0e62', '#00a859', '#dc2626', '#2563eb', '#d97706', '#7c3aed', '#0891b2', '#db2777'];
+      const DEFAULT_KITS = [
+        {
+          id: 'k1', title: '초중등 핵심 상식 & 과학 퀴즈', badge: 'SCI', color: '#1e0e62',
+          questions: [
+            { id: 'q1', type: 'mc', prompt: '지구에서 가장 가까운 별은 무엇일까요?', correct: '태양', wrong: ['북극성', '달', '화성'] },
+            { id: 'q2', type: 'mc', prompt: '물이 얼어 고체가 될 때의 온도는? (1기압)', correct: '0℃', wrong: ['-10℃', '4℃', '100℃'] },
+            { id: 'q3', type: 'mc', prompt: '식물이 빛을 이용해 양분을 만드는 과정은?', correct: '광합성', wrong: ['증산 작용', '호흡 작용', '삼투압'] },
+            { id: 'q4', type: 'mc', prompt: '인체에서 가장 큰 장기는 무엇일까요?', correct: '피부', wrong: ['간', '폐', '위'] },
+            { id: 'q5', type: 'mc', prompt: '태양계에서 고리가 가장 뚜렷한 행성은?', correct: '토성', wrong: ['목성', '금성', '수성'] },
+            { id: 'q6', type: 'mc', prompt: '소리가 전달될 수 없는 공간은?', correct: '진공', wrong: ['물속', '공기 중', '철판'] },
+            { id: 'q7', type: 'text', prompt: '산소의 원소 기호를 영문 대문자로 입력하세요.', correct: 'O', wrong: [] },
+            { id: 'q8', type: 'mc', prompt: '1년 중 낮이 가장 긴 날은?', correct: '하지', wrong: ['동지', '춘분', '추분'] }
+          ]
+        },
+        {
+          id: 'k2', title: '필수 영단어 스피드 마스터', badge: 'ENG', color: '#00a859',
+          questions: [
+            { id: 'e1', type: 'mc', prompt: '"achieve"의 뜻은?', correct: '성취하다, 달성하다', wrong: ['포기하다', '연기하다', '질문하다'] },
+            { id: 'e2', type: 'mc', prompt: '"curious"의 뜻은?', correct: '호기심이 많은', wrong: ['지루해하는', '화난', '무서운'] },
+            { id: 'e3', type: 'mc', prompt: '"environment"의 뜻은?', correct: '환경', wrong: ['경제', '우주', '기계'] },
+            { id: 'e4', type: 'mc', prompt: '"improve"의 뜻은?', correct: '개선하다, 향상시키다', wrong: ['감소시키다', '거절하다', '숨기다'] },
+            { id: 'e5', type: 'mc', prompt: '"opportunity"의 뜻은?', correct: '기회', wrong: ['장애물', '결과', '비밀'] },
+            { id: 'e6', type: 'text', prompt: '"도전"을 뜻하는 영단어를 입력하세요. (c로 시작)', correct: 'challenge', wrong: [] }
+          ]
+        },
+        {
+          id: 'k3', title: '기초 수학 & 암산 트레이닝', badge: 'MATH', color: '#2563eb',
+          questions: [
+            { id: 'm1', type: 'mc', prompt: '15 × 6 = ?', correct: '90', wrong: ['80', '85', '95'] },
+            { id: 'm2', type: 'mc', prompt: '144 ÷ 12 = ?', correct: '12', wrong: ['11', '13', '14'] },
+            { id: 'm3', type: 'mc', prompt: '삼각형 세 내각의 합은?', correct: '180°', wrong: ['90°', '270°', '360°'] },
+            { id: 'm4', type: 'mc', prompt: '2⁵ (2의 5제곱)은?', correct: '32', wrong: ['16', '25', '64'] },
+            { id: 'm5', type: 'text', prompt: '7 × 8 + 4 = ? (숫자만)', correct: '60', wrong: [] },
+            { id: 'm6', type: 'mc', prompt: '0.25를 기약분수로 나타내면?', correct: '1/4', wrong: ['1/2', '1/5', '3/4'] }
+          ]
+        }
+      ];
+
+      function loadKits() {
+        try {
+          const r = localStorage.getItem(STORAGE_KEY);
+          if (r) { const p = JSON.parse(r); if (Array.isArray(p) && p.length) return p; }
+        } catch (e) {}
+        return JSON.parse(JSON.stringify(DEFAULT_KITS));
+      }
+      function saveKits() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.kits)); } catch (e) {} }
+
+      const state = {
+        kits: loadKits(),
+        activeKitId: null,
+        selectedMode: 'classic',
+        durationSec: 180,
+        botCount: 4,
+        playerName: '플레이어',
+        playerColor: COLORS[0],
+        roomCode: String(Math.floor(100000 + Math.random() * 900000)),
+        channel: null,
+        joinedRoom: null,
+        lobbyPlayers: [],
+        game: null
+      };
+      state.activeKitId = state.kits[0].id;
+
+      const $ = (id) => document.getElementById(id);
+      const esc = (s) => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      const money = (n) => '$' + Math.floor(n).toLocaleString('en-US');
+
+      function toast(msg, type = 'info') {
+        const d = document.createElement('div');
+        d.className = 'toast ' + (type === 'success' ? 'success' : type === 'error' ? 'error' : '');
+        d.textContent = msg;
+        $('toastStack').appendChild(d);
+        setTimeout(() => d.remove(), 2600);
+      }
+
+      function openModal(html, dark = false) {
+        const b = $('modalBox');
+        b.className = 'modal-box' + (dark ? ' dark' : '');
+        b.innerHTML = html;
+        $('modalBackdrop').classList.remove('hidden');
+      }
+      function closeModal() { $('modalBackdrop').classList.add('hidden'); $('modalBox').innerHTML = ''; if (!$('screen-dash').classList.contains('hidden')) renderDash(); }
+      $('modalBackdrop').addEventListener('click', (e) => { if (e.target === $('modalBackdrop')) closeModal(); });
+
+      function showScreen(name) {
+        ['landing', 'dash', 'modes', 'lobby', 'play', 'summary'].forEach(s => $('screen-' + s).classList.toggle('hidden', s !== name));
+      }
+
+      /* ========================
+         DASHBOARD
+         ======================== */
+      state.gimBucks = 400;
+      state.xp = 300;
+      state.level = 19;
+      state.rewardsSub = 'home';
+      state.creativeMaps = [
+        { id: 'cm1', name: 'random level obby', mode: 'dld' }
+      ];
+
+      state.playerSkin = 'default';
+      state.unlockedSkins = ['default', 'atlas_tourist', 'atlas_pyramid', 'atlas_ruins', 'atlas_taj'];
+      state.activePackId = null;
+      state.packQty = 1;
+
+      function gimSvg(skinId, color, size = 56) {
+        const c = color || '#1e0e62';
+        if (skinId === 'atlas_pyramid') {
+          return `<svg width="${size}" height="${size}" viewBox="0 0 64 64">
+            <ellipse cx="24" cy="54" rx="6" ry="4" fill="#d97706" stroke="#111827" stroke-width="2.5"/>
+            <ellipse cx="40" cy="54" rx="6" ry="4" fill="#d97706" stroke="#111827" stroke-width="2.5"/>
+            <polygon points="32,10 54,50 10,50" fill="#eab308" stroke="#111827" stroke-width="3" stroke-linejoin="round"/>
+            <line x1="18" y1="36" x2="46" y2="36" stroke="#b45309" stroke-width="2"/>
+            <ellipse cx="27" cy="32" rx="2.8" ry="4.5" fill="#111827"/>
+            <ellipse cx="37" cy="32" rx="2.8" ry="4.5" fill="#111827"/>
+          </svg>`;
+        }
+        if (skinId === 'atlas_ruins') {
+          return `<svg width="${size}" height="${size}" viewBox="0 0 64 64">
+            <ellipse cx="24" cy="55" rx="6" ry="4" fill="#a8a29e" stroke="#111827" stroke-width="2.5"/>
+            <ellipse cx="40" cy="55" rx="6" ry="4" fill="#a8a29e" stroke="#111827" stroke-width="2.5"/>
+            <rect x="16" y="16" width="32" height="36" rx="8" fill="#d6d3d1" stroke="#111827" stroke-width="3"/>
+            <path d="M16 20 Q24 12 32 18 Q40 12 48 20" fill="#16a34a" stroke="#111827" stroke-width="2"/>
+            <ellipse cx="26" cy="33" rx="2.8" ry="4.5" fill="#111827"/>
+            <ellipse cx="38" cy="33" rx="2.8" ry="4.5" fill="#111827"/>
+          </svg>`;
+        }
+        if (skinId === 'atlas_tourist') {
+          return `<svg width="${size}" height="${size}" viewBox="0 0 64 64">
+            <ellipse cx="24" cy="54" rx="6" ry="4" fill="#e11d48" stroke="#111827" stroke-width="2.5"/>
+            <ellipse cx="40" cy="54" rx="6" ry="4" fill="#e11d48" stroke="#111827" stroke-width="2.5"/>
+            <rect x="15" y="16" width="34" height="36" rx="15" fill="#f43f5e" stroke="#111827" stroke-width="3"/>
+            <rect x="19" y="10" width="11" height="7" rx="2" fill="#1e293b" stroke="#111827" stroke-width="2"/>
+            <rect x="34" y="10" width="11" height="7" rx="2" fill="#1e293b" stroke="#111827" stroke-width="2"/>
+            <ellipse cx="26" cy="29" rx="2.6" ry="4.2" fill="#111827"/>
+            <ellipse cx="38" cy="29" rx="2.6" ry="4.2" fill="#111827"/>
+            <rect x="24" y="38" width="16" height="11" rx="3" fill="#334155" stroke="#111827" stroke-width="2"/>
+            <circle cx="32" cy="43.5" r="3.5" fill="#38bdf8" stroke="#111827" stroke-width="1.5"/>
+          </svg>`;
+        }
+        if (skinId === 'atlas_taj') {
+          return `<svg width="${size}" height="${size}" viewBox="0 0 64 64">
+            <rect x="14" y="28" width="36" height="26" rx="5" fill="#f5f5f4" stroke="#111827" stroke-width="2.8"/>
+            <path d="M22 28 Q32 8 42 28 Z" fill="#e7e5e4" stroke="#111827" stroke-width="2.8"/>
+            <rect x="28" y="40" width="8" height="14" rx="4" fill="#94a3b8" stroke="#111827" stroke-width="2"/>
+          </svg>`;
+        }
+        if (skinId === 'atlas_pagoda') {
+          return `<svg width="${size}" height="${size}" viewBox="0 0 64 64">
+            <rect x="18" y="38" width="28" height="16" fill="#16a34a" stroke="#111827" stroke-width="2.5"/>
+            <polygon points="10,38 54,38 46,28 18,28" fill="#15803d" stroke="#111827" stroke-width="2.5"/>
+            <polygon points="15,28 49,28 40,18 24,18" fill="#22c55e" stroke="#111827" stroke-width="2.5"/>
+            <polygon points="22,18 42,18 32,8" fill="#16a34a" stroke="#111827" stroke-width="2.5"/>
+          </svg>`;
+        }
+        return `<svg width="${size}" height="${size}" viewBox="0 0 64 64">
+          <rect x="18" y="46" width="11" height="8" rx="4" fill="${c}" stroke="#111827" stroke-width="2.8"/>
+          <rect x="35" y="46" width="11" height="8" rx="4" fill="${c}" stroke="#111827" stroke-width="2.8"/>
+          <rect x="13" y="16" width="38" height="34" rx="16" fill="${c}" stroke="#111827" stroke-width="3.2"/>
+          <ellipse cx="26" cy="31" rx="2.6" ry="4.8" fill="#111827"/>
+          <ellipse cx="38" cy="31" rx="2.6" ry="4.8" fill="#111827"/>
+        </svg>`;
+      }
+
+      const PACKS = [
+        {
+          id: 'atlas', name: 'ATLAS PACK', cost: 30, bg: 'linear-gradient(135deg,#fca5a5,#b91c1c)', foil: '#fef3c7',
+          items: [
+            { id: 'atlas_tourist', name: 'Tourist Gim', rate: '15.02%', rarity: 'r-green', color: '#f43f5e' },
+            { id: 'atlas_pyramid', name: 'Pyramid Gim', rate: '15.02%', rarity: 'r-green', color: '#eab308' },
+            { id: 'atlas_ruins', name: 'Ancient Ruins Gim', rate: '15.02%', rarity: 'r-green', color: '#d6d3d1' },
+            { id: 'atlas_dune', name: 'Desert Oasis', rate: '15.02%', rarity: 'r-green', color: '#d97706' },
+            { id: 'atlas_taj', name: 'Taj Mahal Gim', rate: '9.75%', rarity: 'r-blue', color: '#f5f5f4' },
+            { id: 'atlas_colosseum', name: 'Colosseum Gim', rate: '9.75%', rarity: 'r-blue', color: '#d6d3d1' },
+            { id: 'atlas_giza', name: 'Great Pyramids', rate: '9.75%', rarity: 'r-blue', color: '#ca8a04' },
+            { id: 'atlas_temple', name: 'Ziggurat Temple', rate: '3.18%', rarity: 'r-purple', color: '#78716c' },
+            { id: 'atlas_passport', name: 'Passport Sticker', rate: '3.18%', rarity: 'r-purple', color: '#7f1d1d' },
+            { id: 'atlas_camera', name: 'Camera Trail', rate: '3.18%', rarity: 'r-purple', color: '#475569' },
+            { id: 'atlas_pagoda', name: 'Emerald Pagoda', rate: '0.70%', rarity: 'r-gold', color: '#16a34a' },
+            { id: 'atlas_oracle', name: 'Azure Shrine', rate: '0.70%', rarity: 'r-gold', color: '#2563eb' }
+          ]
+        },
+        {
+          id: 'veggie', name: 'VEGGIE PACK', cost: 30, bg: 'linear-gradient(135deg,#ea580c,#9a3412)', foil: '#22c55e',
+          items: [
+            { id: 'veg_tomato', name: 'Tomato Gim', rate: '15.02%', rarity: 'r-green', color: '#ef4444' },
+            { id: 'veg_carrot', name: 'Carrot Gim', rate: '15.02%', rarity: 'r-green', color: '#f97316' },
+            { id: 'veg_radish', name: 'Radish Gim', rate: '9.75%', rarity: 'r-blue', color: '#db2777' },
+            { id: 'veg_corn', name: 'Golden Corn', rate: '3.18%', rarity: 'r-purple', color: '#eab308' },
+            { id: 'veg_king', name: 'King Broccoli', rate: '0.70%', rarity: 'r-gold', color: '#15803d' }
+          ]
+        },
+        {
+          id: 'elemental', name: 'ELEMENTAL PACK', cost: 30, bg: 'linear-gradient(135deg,#fde047,#ca8a04)', foil: '#0284c7',
+          items: [
+            { id: 'ele_water', name: 'Aqua Gim', rate: '15.02%', rarity: 'r-green', color: '#38bdf8' },
+            { id: 'ele_fire', name: 'Flame Gim', rate: '15.02%', rarity: 'r-green', color: '#f97316' },
+            { id: 'ele_bolt', name: 'Volt Gim', rate: '9.75%', rarity: 'r-blue', color: '#facc15' },
+            { id: 'ele_frost', name: 'Frost Gim', rate: '3.18%', rarity: 'r-purple', color: '#60a5fa' },
+            { id: 'ele_prism', name: 'Prism Elemental', rate: '0.70%', rarity: 'r-gold', color: '#a855f7' }
+          ]
+        },
+        {
+          id: 'bug', name: 'BUG PACK', cost: 30, bg: 'linear-gradient(135deg,#84cc16,#3f6212)', foil: '#eab308',
+          items: [
+            { id: 'bug_bee', name: 'Bumble Gim', rate: '15.02%', rarity: 'r-green', color: '#eab308' },
+            { id: 'bug_lady', name: 'Ladybug Gim', rate: '9.75%', rarity: 'r-blue', color: '#dc2626' },
+            { id: 'bug_monarch', name: 'Monarch Gim', rate: '0.70%', rarity: 'r-gold', color: '#f97316' }
+          ]
+        },
+        {
+          id: 'retro', name: 'RETRO PACK', cost: 30, bg: 'linear-gradient(135deg,#f472b6,#9333ea)', foil: '#06b6d4',
+          items: [
+            { id: 'ret_pixel', name: '8-Bit Gim', rate: '15.02%', rarity: 'r-green', color: '#06b6d4' },
+            { id: 'ret_arcade', name: 'Arcade Gim', rate: '9.75%', rarity: 'r-blue', color: '#a855f7' },
+            { id: 'ret_synth', name: 'Synthwave Gim', rate: '0.70%', rarity: 'r-gold', color: '#ec4899' }
+          ]
+        },
+        {
+          id: 'dog', name: 'DOG PACK', cost: 30, bg: 'linear-gradient(135deg,#fdba74,#c2410c)', foil: '#92400e',
+          items: [
+            { id: 'dog_pug', name: 'Otis the Pug', rate: '15.02%', rarity: 'r-green', color: '#d97706' },
+            { id: 'dog_shiba', name: 'Shiba Gim', rate: '9.75%', rarity: 'r-blue', color: '#f59e0b' },
+            { id: 'dog_astro', name: 'Astro Pup', rate: '0.70%', rarity: 'r-gold', color: '#6366f1' }
+          ]
+        }
+      ];
+
+      const DISCOVERY_KITS = [
+        { id: 'dk1', title: 'US States & Capitals', author: 'Jena Wilkins', plays: '3.2M plays', grad: 'linear-gradient(135deg,#1e3a8a,#f59e0b)', kitId: 'k1' },
+        { id: 'dk2', title: 'Our Solar System', author: 'Christina Flannery', plays: '2.5M plays', grad: 'linear-gradient(135deg,#020617,#1e1b4b)', kitId: 'k1' },
+        { id: 'dk3', title: 'Colors & Vocabulary', author: 'Avery Ward', plays: '3.1M plays', grad: 'linear-gradient(135deg,#7c3aed,#ec4899,#f59e0b)', kitId: 'k2' },
+        { id: 'dk4', title: 'Speed Math Challenge', author: 'Marcus Chen', plays: '1.9M plays', grad: 'linear-gradient(135deg,#0f172a,#2563eb)', kitId: 'k3' },
+        { id: 'dk5', title: 'Earth Science Review', author: 'Elena Park', plays: '1.4M plays', grad: 'linear-gradient(135deg,#065f46,#10b981)', kitId: 'k1' },
+        { id: 'dk6', title: 'Essential English Verbs', author: 'David Kim', plays: '2.1M plays', grad: 'linear-gradient(135deg,#b45309,#facc15)', kitId: 'k2' }
+      ];
+
+      function renderHeaderRow2(section) {
+        const row2 = $('headerRow2');
+        const shell = $('screen-dash');
+        const isDark = (section === 'rewards' || section === 'creative');
+        shell.classList.toggle('dark-mode', isDark);
+
+        if (section === 'rewards') {
+          row2.innerHTML = `
+            <button class="gk-nav-pill ${state.rewardsSub==='home'?'active':''}" data-rsub="home">🏠 Home</button>
+            <button class="gk-nav-pill" id="rewSeasonBtn">🎫 Season Ticket <span style="background:#10b981;color:#fff;font-size:0.68rem;padding:2px 6px;border-radius:4px;margin-left:3px;">New!</span></button>
+            <button class="gk-nav-pill ${state.rewardsSub==='locker'?'active':''}" data-rsub="locker">▦ Locker</button>
+            <button class="gk-nav-pill ${state.rewardsSub==='shop'?'active':''}" data-rsub="shop">🏪 Shop</button>
+            <div class="gimbucks-pill">🪙 <span id="topGimBucks">${state.gimBucks}</span></div>
+          `;
+          const stBtn = $('rewSeasonBtn'); if (stBtn) stBtn.addEventListener('click', () => toast('Season 1 Ticket이 활성화되어 있습니다! (20+ 코스메틱 잠금 해제 가능)', 'success'));
+          row2.querySelectorAll('[data-rsub]').forEach(b => b.addEventListener('click', () => {
+            state.rewardsSub = b.dataset.rsub;
+            if (state.rewardsSub === 'locker') { switchDashTab('cosmetics'); return; }
+            switchDashTab('rewards');
+          }));
+        } else if (section === 'creative') {
+          row2.innerHTML = `
+            <button class="gk-nav-pill active" data-csub="build">🔨 Build</button>
+            <button class="gk-nav-pill" data-csub="disc">🎮 Discovery</button>
+          `;
+          row2.querySelector('[data-csub="disc"]').addEventListener('click', () => switchDashTab('discovery'));
+        } else {
+          row2.innerHTML = `
+            <button class="gk-nav-pill ${section==='home'?'active':''}" data-tab="home">🏠 Home</button>
+            <button class="gk-nav-pill ${section==='kits'?'active':''}" data-tab="kits">📦 Kits</button>
+            <button class="gk-nav-pill ${section==='join'?'active':''}" data-tab="join">🎮 Join Game</button>
+            <button class="gk-nav-pill ${section==='import'?'active':''}" data-tab="import">📥 Import</button>
+          `;
+          row2.querySelectorAll('[data-tab]').forEach(b => b.addEventListener('click', () => switchDashTab(b.dataset.tab)));
+        }
+      }
+
+      function switchDashTab(tab) {
+        ['home', 'kits', 'join', 'cosmetics', 'import', 'discovery', 'rewards', 'creative'].forEach(t => {
+          const el = $('tab-' + t);
+          if (el) el.classList.toggle('hidden', t !== tab);
+        });
+        document.querySelectorAll('.gk-pill-outline').forEach(b => b.classList.toggle('active', b.dataset.top === tab));
+        renderHeaderRow2(tab);
+
+        if (tab === 'kits') renderDash();
+        if (tab === 'discovery') renderDiscovery();
+        if (tab === 'rewards') renderRewards();
+        if (tab === 'creative') renderCreative();
+      }
+
+      function renderDiscovery() {
+        const q = ($('discSearchInput').value || '').trim().toLowerCase();
+        const grid = $('discGrid');
+        grid.innerHTML = '';
+        DISCOVERY_KITS.filter(d => d.title.toLowerCase().includes(q)).forEach(d => {
+          const card = document.createElement('div');
+          card.className = 'disc-card';
+          card.style.background = d.grad;
+          card.innerHTML = `
+            <div style="font-weight:900; font-size:1.1rem;">${esc(d.title)}</div>
+            <div style="font-size:0.82rem; font-style:italic; opacity:0.9;">${esc(d.author)}</div>
+            <div style="font-size:0.75rem; opacity:0.85; margin-top:4px;">▶ ${d.plays} · 클릭하여 바로 플레이</div>
+          `;
+          card.addEventListener('click', () => {
+            state.activeKitId = d.kitId;
+            $('modesKitTitle').textContent = d.title;
+            showScreen('modes');
+          });
+          grid.appendChild(card);
+        });
+      }
+      $('discSearchInput').addEventListener('input', renderDiscovery);
+      $('discSearchBtn').addEventListener('click', renderDiscovery);
+
+      function renderRewards() {
+        $('rewGimBadge').innerHTML = gimSvg(state.playerSkin, state.playerColor, 58);
+        $('rewLevelNum').textContent = state.level;
+        $('rewXpText').textContent = `${state.xp}/1,000XP`;
+        $('rewXpRemain').textContent = `${1000 - state.xp} XP TO LEVEL ${state.level + 1}`;
+        $('rewXpBar').style.width = Math.min(100, (state.xp / 1000) * 100) + '%';
+        $('rewardsSubHome').classList.toggle('hidden', state.rewardsSub !== 'home');
+        $('rewardsSubShop').classList.toggle('hidden', state.rewardsSub !== 'shop');
+        $('rewardsSubPackDetail').classList.toggle('hidden', state.rewardsSub !== 'pack');
+
+        const pg = $('packsGrid');
+        pg.innerHTML = '';
+        PACKS.forEach(pk => {
+          const el = document.createElement('div');
+          el.className = 'pack-card';
+          el.style.background = pk.bg;
+          el.innerHTML = `
+            <div class="pack-foil" style="background:${pk.foil}; color:#111827;">${pk.name.split(' ')[0]}</div>
+            <div style="font-weight:900; font-style:italic; font-size:0.95rem;">${pk.name}</div>
+            <div style="font-size:0.85rem; color:#fde047; font-weight:800; margin-top:4px;">🪙 ${pk.cost}</div>
+          `;
+          el.addEventListener('click', () => {
+            state.activePackId = pk.id;
+            state.packQty = 1;
+            state.rewardsSub = 'pack';
+            renderRewards();
+          });
+          pg.appendChild(el);
+        });
+
+        if (state.rewardsSub === 'pack') {
+          const pk = PACKS.find(x => x.id === state.activePackId) || PACKS[0];
+          const totalCost = pk.cost * state.packQty;
+          const wrap = $('packDetailContainer');
+          wrap.innerHTML = `
+            <div style="text-align:left; margin-bottom:8px;">
+              <button class="btn btn-outline btn-sm" id="backToPacksBtn" style="background:rgba(255,255,255,0.12); color:#fff; border-color:rgba(255,255,255,0.25);">← Shop</button>
+            </div>
+            <div class="pack-foil" style="background:${pk.foil}; color:#111827; width:130px; height:170px; font-size:1.2rem;">
+              ${gimSvg(pk.items[0].id, pk.items[0].color, 72)}
+              <span style="margin-top:4px;">${pk.name.split(' ')[0]}</span>
+            </div>
+            <h1 style="font-size:1.9rem; font-weight:900; font-style:italic; margin:8px 0 12px;">${pk.name}</h1>
+            <button class="btn btn-green" id="openPackNowBtn" style="padding:11px 28px; font-size:0.98rem;">
+              OPEN FOR 🪙 ${totalCost} (${state.packQty}x)
+            </button>
+            <div class="pack-qty-row">
+              <button class="pack-qty-btn" id="qtyMinusBtn">-1</button>
+              <button class="pack-qty-btn" id="qtyPlus1Btn">+1</button>
+              <button class="pack-qty-btn" id="qtyPlus5Btn">+5</button>
+            </div>
+            <div class="pack-items-box">
+              <div class="pack-items-grid">
+                ${pk.items.map(it => {
+                  const owned = state.unlockedSkins.includes(it.id);
+                  return `
+                    <div>
+                      <div class="rarity-tile ${it.rarity}" title="${esc(it.name)}">
+                        ${gimSvg(it.id, it.color, 58)}
+                      </div>
+                      <div class="pack-rate-label">${it.rate} ${owned ? '<span style="color:#4ade80;">✓</span>' : ''}</div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          `;
+          $('backToPacksBtn').addEventListener('click', () => { state.rewardsSub = 'shop'; renderRewards(); });
+          $('qtyMinusBtn').addEventListener('click', () => { state.packQty = Math.max(1, state.packQty - 1); renderRewards(); });
+          $('qtyPlus1Btn').addEventListener('click', () => { state.packQty = Math.min(20, state.packQty + 1); renderRewards(); });
+          $('qtyPlus5Btn').addEventListener('click', () => { state.packQty = Math.min(20, state.packQty + 5); renderRewards(); });
+          $('openPackNowBtn').addEventListener('click', () => {
+            if (state.gimBucks < totalCost) { toast('GimBucks가 부족합니다!', 'error'); return; }
+            state.gimBucks -= totalCost;
+            const pulled = [];
+            for (let q = 0; q < state.packQty; q++) {
+              const pick = pk.items[Math.floor(Math.random() * pk.items.length)];
+              pulled.push(pick);
+              if (!state.unlockedSkins.includes(pick.id)) state.unlockedSkins.push(pick.id);
+            }
+            const featured = pulled[pulled.length - 1];
+            state.playerSkin = featured.id;
+            state.playerColor = featured.color;
+            Sound.play('buy');
+            renderHeaderRow2('rewards');
+            renderRewards();
+            openModal(`
+              <div style="text-align:center;">
+                <h3>🎉 ${pk.name} (${state.packQty}개 오픈)</h3>
+                <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin:18px 0;">
+                  ${pulled.map(p => `
+                    <div class="rarity-tile ${p.rarity}" style="width:76px; height:76px;">
+                      ${gimSvg(p.id, p.color, 54)}
+                    </div>
+                  `).join('')}
+                </div>
+                <p style="font-weight:800; margin-bottom:14px;">${esc(featured.name)} 장착 완료!</p>
+                <button class="btn btn-green" id="pkDoneBtn">확인</button>
+              </div>
+            `, true);
+            $('pkDoneBtn').addEventListener('click', closeModal);
+          });
+        }
+      }
+
+      function renderCreative() {
+        $('creativeSlotsText').textContent = `${state.creativeMaps.length}/3 slots used`;
+        const list = $('creativeMapsList');
+        list.innerHTML = '';
+        state.creativeMaps.forEach(m => {
+          const row = document.createElement('div');
+          row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:rgba(255,255,255,0.08);border-radius:10px;';
+          row.innerHTML = `<span style="font-weight:700;">${esc(m.name)}</span><button class="btn btn-green btn-sm">Play Map ▶</button>`;
+          row.querySelector('button').addEventListener('click', () => {
+            state.selectedMode = m.mode || 'dld';
+            openLobby();
+          });
+          list.appendChild(row);
+        });
+      }
+      $('creativeTutBtn').addEventListener('click', () => { state.selectedMode = 'dld'; openLobby(); });
+      $('creativeNewMapBtn').addEventListener('click', () => {
+        if (state.creativeMaps.length >= 3) { toast('최대 3개 슬롯까지 생성할 수 있습니다.', 'error'); return; }
+        state.creativeMaps.push({ id: 'cm_' + Date.now(), name: 'My Custom Arena ' + (state.creativeMaps.length + 1), mode: 'knockback' });
+        renderCreative();
+        toast('새 Creative 맵이 생성되었습니다!', 'success');
+      });
+
+      document.querySelectorAll('.gk-pill-outline').forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (btn.dataset.top === 'rewards') state.rewardsSub = 'home';
+          switchDashTab(btn.dataset.top);
+        });
+      });
+      $('brandBtn').addEventListener('click', () => switchDashTab('home'));
+      $('topProfileBtn').addEventListener('click', () => switchDashTab('cosmetics'));
+      document.querySelectorAll('#assignFilterRow .gk-filter-pill').forEach(b => {
+        b.addEventListener('click', () => {
+          document.querySelectorAll('#assignFilterRow .gk-filter-pill').forEach(x => x.classList.remove('active'));
+          b.classList.add('active');
+        });
+      });
+
+      function renderDash() {
+        const q = ($('kitSearch').value || '').trim().toLowerCase();
+        const list = $('kitsList');
+        list.innerHTML = '';
+        state.kits.filter(k => k.title.toLowerCase().includes(q)).forEach(kit => {
+          const card = document.createElement('div');
+          card.className = 'kit-card';
+          card.innerHTML = `
+            <div style="display:flex; align-items:center; gap:14px; min-width:0; flex:1;">
+              <div class="kit-cover" style="background:${kit.color || '#1e0e62'};">${esc(kit.badge || 'KIT')}</div>
+              <div style="min-width:0;">
+                <div style="font-weight:800; font-size:1.02rem;">${esc(kit.title)}</div>
+                <div style="font-size:0.84rem; color:var(--text-muted);">${kit.questions.length} Questions</div>
+              </div>
+            </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button class="btn btn-green play-btn">▶ Play Live</button>
+              <button class="btn btn-outline btn-sm edit-btn">Edit</button>
+              <button class="btn btn-outline btn-sm exp-btn">Export JSON</button>
+            </div>
+          `;
+          card.querySelector('.play-btn').addEventListener('click', () => {
+            if (!kit.questions.length) { toast('문제를 1개 이상 추가하세요.', 'error'); return; }
+            state.activeKitId = kit.id;
+            $('modesKitTitle').textContent = kit.title + ' (' + kit.questions.length + ' Questions)';
+            showScreen('modes');
+          });
+          card.querySelector('.edit-btn').addEventListener('click', () => openKitEditor(kit));
+          card.querySelector('.exp-btn').addEventListener('click', () => {
+            const blob = new Blob([JSON.stringify(kit, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = 'gimkit-kit.json'; a.click();
+            URL.revokeObjectURL(url);
+            toast('JSON 내보내기 완료', 'success');
+          });
+          list.appendChild(card);
+        });
+      }
+      $('kitSearch').addEventListener('input', renderDash);
+
+      $('newKitBtn').addEventListener('click', () => {
+        const nk = {
+          id: 'k_' + Date.now(),
+          title: 'Untitled Kit ' + (state.kits.length + 1),
+          badge: 'NEW',
+          color: COLORS[state.kits.length % COLORS.length],
+          questions: [{ id: 'q_' + Date.now(), type: 'mc', prompt: '첫 번째 질문을 입력하세요', correct: '정답', wrong: ['오답1', '오답2', '오답3'] }]
+        };
+        if ($('kitSearch')) $('kitSearch').value = '';
+        state.activeKitId = nk.id;
+        state.kits.unshift(nk); saveKits(); switchDashTab('kits'); renderDash(); openKitEditor(nk);
+      });
+
+      function openKitEditor(kit) {
+        function draw() {
+          openModal(`
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+              <h3>Edit Kit</h3>
+              <button class="btn btn-outline btn-sm" id="keClose">Done</button>
+            </div>
+            <label style="font-size:0.82rem;font-weight:700;">Kit Name</label>
+            <input class="input" id="keTitle" value="${esc(kit.title)}" style="margin-bottom:12px;" />
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+              <strong>Questions (${kit.questions.length})</strong>
+              <button class="btn btn-green btn-sm" id="keAdd">+ Add Question</button>
+            </div>
+            <div style="max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;">
+              ${kit.questions.map((q, i) => `
+                <div style="padding:10px;border:1px solid #e5e7eb;border-radius:8px;display:flex;justify-content:space-between;align-items:center;gap:8px;">
+                  <div style="min-width:0;">
+                    <div style="font-size:0.75rem;color:#1e0e62;font-weight:800;">Q${i + 1} · ${q.type === 'text' ? 'Text Input' : 'Multiple Choice'}</div>
+                    <div style="font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(q.prompt)}</div>
+                    <div style="font-size:0.8rem;color:#059669;">Answer: ${esc(q.correct)}</div>
+                  </div>
+                  <button class="btn btn-red btn-sm ke-del" data-id="${q.id}">Delete</button>
+                </div>
+              `).join('')}
+            </div>
+          `);
+          $('keClose').addEventListener('click', () => { closeModal(); renderDash(); });
+          $('keTitle').addEventListener('input', (e) => { kit.title = e.target.value.trim() || 'Untitled'; saveKits(); renderDash(); });
+          $('keAdd').addEventListener('click', () => openAddQ(kit, draw));
+          $('modalBox').querySelectorAll('.ke-del').forEach(b => b.addEventListener('click', () => {
+            kit.questions = kit.questions.filter(x => x.id !== b.dataset.id); saveKits(); draw();
+          }));
+        }
+        draw();
+      }
+
+      function openAddQ(kit, onBack) {
+        openModal(`
+          <h3 style="margin-bottom:12px;">Add Question</h3>
+          <select class="select" id="aqType" style="margin-bottom:10px;">
+            <option value="mc">Multiple Choice</option>
+            <option value="text">Text Input</option>
+          </select>
+          <input class="input" id="aqPrompt" placeholder="Question" style="margin-bottom:10px;" />
+          <input class="input" id="aqCorrect" placeholder="Correct Answer" style="margin-bottom:10px;" />
+          <div id="aqWrongs">
+            <input class="input" id="aqW0" placeholder="Incorrect Answer 1" style="margin-bottom:6px;" />
+            <input class="input" id="aqW1" placeholder="Incorrect Answer 2" style="margin-bottom:6px;" />
+            <input class="input" id="aqW2" placeholder="Incorrect Answer 3" style="margin-bottom:12px;" />
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end;">
+            <button class="btn btn-outline btn-sm" id="aqCancel">Cancel</button>
+            <button class="btn btn-green btn-sm" id="aqSave">Add</button>
+          </div>
+        `);
+        $('aqType').addEventListener('change', (e) => $('aqWrongs').classList.toggle('hidden', e.target.value === 'text'));
+        $('aqCancel').addEventListener('click', onBack);
+        $('aqSave').addEventListener('click', () => {
+          const type = $('aqType').value, prompt = $('aqPrompt').value.trim(), correct = $('aqCorrect').value.trim();
+          if (!prompt || !correct) { toast('질문과 정답을 입력하세요.', 'error'); return; }
+          const wrong = type === 'mc' ? [$('aqW0').value.trim() || 'Option A', $('aqW1').value.trim() || 'Option B', $('aqW2').value.trim() || 'Option C'] : [];
+          kit.questions.push({ id: 'q_' + Date.now(), type, prompt, correct, wrong });
+          saveKits(); onBack();
+        });
+      }
+
+      function renderCosmetics() {
+        $('cosNameLabel').textContent = state.playerName;
+        $('cosGim').style.background = state.playerColor;
+        const row = $('cosColors'); row.innerHTML = '';
+        COLORS.forEach(c => {
+          const d = document.createElement('div');
+          d.style.cssText = `width:34px;height:34px;border-radius:50%;background:${c};cursor:pointer;border:3px solid ${state.playerColor === c ? '#111827' : 'transparent'};`;
+          d.addEventListener('click', () => { state.playerColor = c; renderCosmetics(); renderDash(); });
+          row.appendChild(d);
+        });
+      }
+      $('cosNameInput').addEventListener('input', (e) => { state.playerName = e.target.value.trim() || '플레이어'; renderCosmetics(); renderDash(); });
+
+      $('impRunBtn').addEventListener('click', () => {
+        const title = $('impName').value.trim() || 'Imported Kit', raw = $('impRaw').value.trim();
+        if (!raw) { toast('데이터를 입력하세요.', 'error'); return; }
+        try {
+          if (raw.startsWith('{') || raw.startsWith('[')) {
+            const p = JSON.parse(raw);
+            const k = Array.isArray(p) ? { id: 'k_' + Date.now(), title, badge: 'IMP', color: '#1e0e62', questions: p } : { ...p, id: 'k_' + Date.now() };
+            if ($('kitSearch')) $('kitSearch').value = ''; state.activeKitId = k.id; state.kits.unshift(k); saveKits(); switchDashTab('kits'); renderDash(); toast('JSON 키트 추가 완료!', 'success'); return;
+          }
+        } catch (e) {}
+        const pairs = raw.split(/\r?\n/).map(l => {
+          const s = l.includes('\t') ? l.split('\t') : l.split(',');
+          return { q: (s[0] || '').trim(), a: (s[1] || '').trim() };
+        }).filter(x => x.q && x.a);
+        if (pairs.length < 2) { toast('최소 2줄 이상 필요합니다.', 'error'); return; }
+        const allA = pairs.map(x => x.a);
+        const questions = pairs.map((item, i) => {
+          const pool = allA.filter(a => a !== item.a), wrong = [];
+          while (wrong.length < 3 && pool.length) wrong.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
+          while (wrong.length < 3) wrong.push('Option ' + (wrong.length + 1));
+          return { id: 'iq_' + Date.now() + '_' + i, type: 'mc', prompt: item.q, correct: item.a, wrong };
+        });
+        const impK = { id: 'k_' + Date.now(), title, badge: 'IMP', color: '#00a859', questions };
+        if ($('kitSearch')) $('kitSearch').value = '';
+        state.activeKitId = impK.id;
+        state.kits.unshift(impK); saveKits(); switchDashTab('kits'); renderDash(); toast(`${questions.length}문제 키트 생성 완료!`, 'success');
+      });
+
+      /* ========================
+         MODE PICKER & LOBBY
+         ======================== */
+      $('modesBackBtn').addEventListener('click', () => showScreen('dash'));
+      document.querySelectorAll('.mode-tile').forEach(tile => {
+        tile.addEventListener('click', () => {
+          state.selectedMode = tile.dataset.mode;
+          openModal(`
+            <h3 style="margin-bottom:14px;">Game Options (${tile.querySelector('h2').textContent})</h3>
+            <label style="font-size:0.84rem;font-weight:700;">Time Limit</label>
+            <select class="select" id="optTime" style="margin-bottom:12px;">
+              <option value="120">2 Minutes</option>
+              <option value="180" selected>3 Minutes</option>
+              <option value="300">5 Minutes</option>
+            </select>
+            <label style="font-size:0.84rem;font-weight:700;">AI Bots</label>
+            <select class="select" id="optBot" style="margin-bottom:16px;">
+              <option value="0">0 Bots (Solo)</option>
+              <option value="4" selected>4 Bots</option>
+              <option value="7">7 Bots</option>
+            </select>
+            <div style="display:flex;gap:8px;justify-content:flex-end;">
+              <button class="btn btn-outline btn-sm" id="optCancel">Cancel</button>
+              <button class="btn btn-green" id="optGo">Continue →</button>
+            </div>
+          `);
+          $('optCancel').addEventListener('click', closeModal);
+          $('optGo').addEventListener('click', () => {
+            state.durationSec = parseInt($('optTime').value, 10);
+            state.botCount = parseInt($('optBot').value, 10);
+            closeModal();
+            openLobby();
+          });
+        });
+      });
+
+      const BOT_NAMES = ['민준', '서연', '지호', '하은', '도윤', '수아', '예준'];
+      function initChannel() {
+        if (state.channel || typeof BroadcastChannel === 'undefined') return;
+        state.channel = new BroadcastChannel('gimkit_v3_room');
+        state.channel.onmessage = (ev) => {
+          const m = ev.data || {};
+          if (m.type === 'JOIN' && m.code === state.roomCode) {
+            if (!state.lobbyPlayers.find(p => p.id === m.peer.id)) {
+              state.lobbyPlayers.push(m.peer); renderLobby(); toast(`${m.peer.name} joined!`, 'success');
+            }
+            state.channel.postMessage({ type: 'ACK', code: state.roomCode, peerId: m.peer.id });
+          } else if (m.type === 'ACK' && state.joinedRoom === m.code) {
+            $('joinMsg').classList.remove('hidden');
+            $('joinMsg').textContent = `Connected to Room ${m.code}! Waiting for host...`;
+          } else if (m.type === 'START' && state.joinedRoom === m.code) {
+            startGame(m.mode, m.dur, [], m.kit, m.code);
+          } else if (m.type === 'SYNC' && state.game && state.game.roomCode === m.code) {
+            const p = state.game.players.find(x => x.id === m.player.id);
+            if (p) p.cash = m.player.cash; else state.game.players.push({ ...m.player, isMe: false });
+          }
+        };
+      }
+
+      $('joinBtn').addEventListener('click', () => {
+        initChannel();
+        const code = $('joinCode').value.trim(), nick = $('joinName').value.trim() || 'Guest';
+        if (code.length !== 6) { toast('6자리 코드를 입력하세요.', 'error'); return; }
+        state.playerName = nick; state.joinedRoom = code; state._pid = 'p_' + Math.floor(Math.random() * 1e6);
+        if (state.channel) state.channel.postMessage({ type: 'JOIN', code, peer: { id: state._pid, name: nick, color: COLORS[2] } });
+      });
+
+      function openLobby() {
+        initChannel();
+        state.roomCode = String(Math.floor(100000 + Math.random() * 900000));
+        state.lobbyPlayers = [{ id: 'me', name: state.playerName, color: state.playerColor, isMe: true }];
+        for (let i = 0; i < state.botCount; i++) {
+          state.lobbyPlayers.push({ id: 'b_' + i, name: BOT_NAMES[i % BOT_NAMES.length] + ' (AI)', color: COLORS[(i + 1) % COLORS.length], isBot: true, lvl: 1 });
+        }
+        $('lobbyCodeNum').textContent = state.roomCode.slice(0, 3) + ' ' + state.roomCode.slice(3);
+        $('lobbySubInfo').textContent = `Mode: ${state.selectedMode.toUpperCase()} · ${Math.floor(state.durationSec / 60)}m`;
+        renderLobby();
+        showScreen('lobby');
+      }
+
+      function renderLobby() {
+        $('lobbyCount').textContent = state.lobbyPlayers.length;
+        $('lobbyGrid').innerHTML = state.lobbyPlayers.map(p => `
+          <div class="lobby-chip">
+            <div class="gim" style="width:30px;height:30px;background:${p.color};border-width:2px;">
+              <div class="gim-eyes"><span class="gim-eye" style="width:4px;height:5px;"></span><span class="gim-eye" style="width:4px;height:5px;"></span></div>
+            </div>
+            <span>${esc(p.name)}</span>
+          </div>
+        `).join('');
+      }
+
+      $('lobbyAddBotBtn').addEventListener('click', () => {
+        const i = state.lobbyPlayers.length;
+        state.lobbyPlayers.push({ id: 'b_' + Date.now(), name: BOT_NAMES[i % BOT_NAMES.length] + ' (AI)', color: COLORS[i % COLORS.length], isBot: true, lvl: 1 });
+        renderLobby();
+      });
+      $('lobbyBackBtn').addEventListener('click', () => showScreen('modes'));
+      $('lobbyStartBtn').addEventListener('click', () => {
+        const kit = state.kits.find(k => k.id === state.activeKitId) || state.kits[0];
+        if (state.channel) state.channel.postMessage({ type: 'START', code: state.roomCode, mode: state.selectedMode, dur: state.durationSec, kit });
+        startGame(state.selectedMode, state.durationSec, state.lobbyPlayers, kit, state.roomCode);
+      });
+
+      /* ========================
+         EXACT GIMKIT CLASSIC ECONOMY & SHOP
+         ======================== */
+      const MPQ_VAL  = [1, 5, 50, 100, 500, 2000, 10000, 50000, 250000, 1000000];
+      const MPQ_COST = [0, 10, 100, 1000, 10000, 75000, 300000, 1000000, 7500000, 75000000];
+      const STR_VAL  = [0, 2, 20, 100, 500, 2000, 4000, 10000, 50000, 1000000];
+      const STR_COST = [0, 15, 150, 1500, 15000, 86250, 337500, 1125000, 11250000, 150000000];
+      const MUL_VAL  = [1, 1.5, 2, 3, 5, 8, 12, 18, 30, 100];
+      const MUL_COST = [0, 50, 300, 2000, 15000, 100000, 525000, 4875000, 48750000, 750000000];
+      const INS_VAL  = [0, 10, 25, 50, 70, 80, 90, 95, 99];
+      const INS_COST = [0, 10, 250, 1000, 10000, 50000, 250000, 1000000, 10000000];
+
+      const THEMES = [
+        { id: 'default', name: 'Classic Dark', bg: '#1f2029', cost: 0 },
+        { id: 'night', name: 'Midnight Blue', bg: '#0f172a', cost: 10 },
+        { id: 'cosmic', name: 'Thanos Cosmic', bg: '#2e1065', cost: 25 },
+        { id: 'retro', name: 'Retro Teal', bg: '#134e4a', cost: 35 },
+        { id: 'gold', name: 'Pure Gold', bg: '#78350f', cost: 50 }
+      ];
+
+      let timerId = null, botId = null, rafId = null;
+      function stopLoops() {
+        if (timerId) { clearInterval(timerId); timerId = null; }
+        if (botId) { clearInterval(botId); botId = null; }
+        if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+      }
+
+      function startGame(mode, dur, initialPlayers, kit, roomCode) {
+        stopLoops(); Sound.init();
+        const players = initialPlayers.length
+          ? initialPlayers.map(p => ({ ...p, cash: 0, frozenUntil: 0 }))
+          : [{ id: state._pid || 'me', name: state.playerName, color: state.playerColor, cash: 0, isMe: true }];
+
+        state.game = {
+          running: true, mode, kit, roomCode, timeLeft: dur, players,
+          cash: 0, streak: 0, bestStreak: 0, correct: 0, total: 0,
+          mLv: 0, sLv: 0, xLv: 0, iLv: 0,
+          nextBonus: 1, minuteDoubleUntil: 0, discountUntil: 0,
+          theme: 'default', unlockedThemes: ['default'],
+          inShop: false, shopTab: 'upgrades', curQ: null,
+          // 2D Fishtopia & DLD
+          bait: 5, fishBag: [], maxBag: 3, rodLv: 1, zone: 'Starter Pier', unlockedZones: ['Starter Pier'],
+          energy: 100, heightM: 0, maxHeightM: 0, qOpen: false
+        };
+
+        $('screen-play').style.setProperty('--theme-bg', '#1f2029');
+        showScreen('play');
+        const is2d = ['fishtopia', 'dld', 'knockback', 'blastball', 'tag', 'ctf'].includes(mode);
+        $('classicBody').classList.toggle('hidden', is2d);
+        $('arenaBody').classList.toggle('hidden', !is2d);
+        $('play2dPill').classList.toggle('hidden', !is2d);
+        $('btn2dFish').classList.toggle('hidden', mode !== 'fishtopia');
+        $('btn2dBoat').classList.toggle('hidden', mode !== 'fishtopia');
+        $('btn2dFire').classList.toggle('hidden', !['knockback', 'blastball', 'tag'].includes(mode));
+
+        updateHud();
+        if (!is2d) renderClassicQuestion();
+        else if (mode === 'fishtopia') runFishtopia();
+        else if (mode === 'dld') runDLD();
+        else if (mode === 'knockback') runKnockback();
+        else if (mode === 'blastball') runBlastball();
+        else if (mode === 'tag') runTagDomination();
+        else if (mode === 'ctf') runCTF();
+
+        timerId = setInterval(() => {
+          const g = state.game; if (!g || !g.running) return;
+          g.timeLeft--;
+          if (g.mode === 'lava' && g.cash > 0) g.cash = Math.max(0, Math.floor(g.cash * 0.985));
+          updateHud();
+          if (g.timeLeft <= 0) endGame();
+        }, 1000);
+
+        botId = setInterval(() => {
+          const g = state.game; if (!g || !g.running) return;
+          const now = Date.now();
+          g.players.forEach(p => {
+            if (!p.isBot || p.frozenUntil > now) return;
+            if (Math.random() < 0.72) {
+              p.cash += Math.round(6 + Math.pow(p.lvl || 1, 2.3) * 4);
+              if (p.cash > Math.pow(p.lvl || 1, 2.5) * 28 && (p.lvl || 1) < 9) p.lvl = (p.lvl || 1) + 1;
+            }
+          });
+        }, 2400);
+      }
+
+      function updateHud() {
+        const g = state.game; if (!g) return;
+        const me = g.players.find(p => p.isMe);
+        if (me) me.cash = g.cash;
+        $('playCash').textContent = money(g.cash);
+        $('playStreak').textContent = `🔥 ${g.streak}`;
+        const m = String(Math.floor(g.timeLeft / 60)).padStart(2, '0'), s = String(g.timeLeft % 60).padStart(2, '0');
+        $('playTimer').textContent = `${m}:${s}`;
+        if (g.mode === 'fishtopia') {
+          const bagVal = g.fishBag.reduce((a, b) => a + b.val, 0);
+          $('play2dPill').textContent = `📍 ${g.zone} · 🪱 Bait ${g.bait} · 🎒 ${g.fishBag.length}/${g.maxBag} (${money(bagVal)})`;
+        } else if (g.mode === 'dld') {
+          $('play2dPill').textContent = `⚡ ${Math.floor(g.energy)} · 🏔️ ${Math.floor(g.heightM)}m / 1,000m`;
+        } else if (g.mode === 'knockback') {
+          $('play2dPill').textContent = `🔫 Ammo ${g.ammo ?? 12} · 💥 Fragility ${g.fragility ?? 0}% · KO ${g.kos ?? 0}`;
+        } else if (g.mode === 'blastball') {
+          $('play2dPill').textContent = `⚡ Blasts ${g.blasts ?? 10} · 🔵 ${g.blueGoals ?? 0} : ${g.redGoals ?? 0} 🔴`;
+        } else if (g.mode === 'tag') {
+          $('play2dPill').textContent = `⚡ Energy ${Math.floor(g.energy)} · 🏷️ Tags ${g.tags ?? 0}`;
+        } else if (g.mode === 'ctf') {
+          $('play2dPill').textContent = `🔵 Blue ${g.blueCaps ?? 0} : ${g.redCaps ?? 0} 🔴 ${g.hasFlag ? '· 🚩 깃발 보유 중!' : ''}`;
+        }
+        if (state.channel && g.roomCode && me) {
+          state.channel.postMessage({ type: 'SYNC', code: g.roomCode, player: { id: me.id, name: me.name, cash: g.cash } });
+        }
+      }
+
+      function shuffle(a) {
+        const b = [...a];
+        for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; }
+        return b;
+      }
+
+      function calcEarned(ok) {
+        const g = state.game;
+        if (ok) {
+          const base = MPQ_VAL[g.mLv];
+          const str = g.streak > 0 ? STR_VAL[g.sLv] * Math.min(g.streak, 10) : 0;
+          const m2 = Date.now() < g.minuteDoubleUntil ? 2 : 1;
+          const res = Math.round((base + str) * MUL_VAL[g.xLv] * g.nextBonus * m2);
+          g.nextBonus = 1;
+          return res;
+        }
+        return -Math.round(MPQ_VAL[g.mLv] * (1 - INS_VAL[g.iLv] / 100));
+      }
+
+      function renderClassicQuestion() {
+        const g = state.game; if (!g || !g.running) return;
+        g.inShop = false;
+        $('playShopBtn').textContent = '🛒 Shop';
+        const q = g.kit.questions[Math.floor(Math.random() * g.kit.questions.length)];
+        g.curQ = q;
+        const body = $('classicBody');
+        if (q.type === 'text') {
+          body.innerHTML = `
+            <div class="play-question-area"><div class="play-question-text">${esc(q.prompt)}</div></div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;gap:14px;">
+              <input class="input" id="txtAns" placeholder="Type answer..." style="max-width:440px;text-align:center;font-size:1.25rem;padding:15px;" autocomplete="off" />
+              <button class="btn btn-green" id="txtSub" style="padding:13px 36px;font-size:1rem;">Submit</button>
+            </div>
+          `;
+          const inp = $('txtAns'); inp.focus();
+          const go = () => onClassicAnswer(inp.value.trim().toLowerCase() === q.correct.trim().toLowerCase(), q.correct);
+          $('txtSub').addEventListener('click', go);
+          inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
+        } else {
+          const opts = shuffle([q.correct, ...q.wrong.slice(0, 3)]);
+          body.innerHTML = `
+            <div class="play-question-area"><div class="play-question-text">${esc(q.prompt)}</div></div>
+            <div class="play-answers-grid">
+              ${opts.map((o, i) => `<button class="ans-tile t${i}" data-a="${esc(o)}">${esc(o)}</button>`).join('')}
+            </div>
+          `;
+          body.querySelectorAll('.ans-tile').forEach(b => b.addEventListener('click', () => onClassicAnswer(b.dataset.a === q.correct, q.correct)));
+        }
+      }
+
+      function onClassicAnswer(ok, correctText) {
+        const g = state.game; if (!g || !g.running) return;
+        g.total++;
+        const delta = calcEarned(ok);
+        if (ok) { g.correct++; g.streak++; if (g.streak > g.bestStreak) g.bestStreak = g.streak; g.cash += delta; Sound.play('correct'); }
+        else { g.streak = 0; g.cash = Math.max(0, g.cash + delta); Sound.play('wrong'); }
+        updateHud();
+
+        $('classicBody').innerHTML = `
+          <div class="feedback-full ${ok ? 'ok' : 'bad'}">
+            <div style="font-size:2.8rem;font-weight:900;">${delta >= 0 ? '+' + money(delta) : money(delta)}</div>
+            <div style="font-size:1.2rem;font-weight:800;">${ok ? 'Correct!' : 'Incorrect · Answer: ' + esc(correctText)}</div>
+            <div style="display:flex;gap:12px;margin-top:10px;flex-wrap:wrap;justify-content:center;">
+              <button class="btn" id="fbNext" style="background:#fff;color:#111827;padding:13px 28px;font-size:1rem;">Continue (Enter)</button>
+              <button class="btn" id="fbShop" style="background:rgba(0,0,0,0.28);color:#fff;padding:13px 24px;font-size:1rem;">Shop</button>
+            </div>
+          </div>
+        `;
+        $('fbNext').addEventListener('click', renderClassicQuestion);
+        $('fbShop').addEventListener('click', openShop);
+      }
+
+      function shopPrice(base) {
+        const g = state.game;
+        return Date.now() < g.discountUntil ? Math.round(base * 0.75) : base;
+      }
+
+      function buildShopHtml() {
+        const g = state.game;
+        const tab = g.shopTab;
+        let inner = '';
+        if (tab === 'upgrades') {
+          const mC = g.mLv < MPQ_COST.length - 1 ? shopPrice(MPQ_COST[g.mLv + 1]) : null;
+          const sC = g.sLv < STR_COST.length - 1 ? shopPrice(STR_COST[g.sLv + 1]) : null;
+          const xC = g.xLv < MUL_COST.length - 1 ? shopPrice(MUL_COST[g.xLv + 1]) : null;
+          const iC = g.iLv < INS_COST.length - 1 ? shopPrice(INS_COST[g.iLv + 1]) : null;
+          inner = `
+            <div class="shop-grid">
+              <div class="shop-card"><div><strong>💵 Money Per Question</strong><div style="font-size:0.84rem;color:#d1d5db;margin-top:4px;">Lv.${g.mLv+1}: ${money(MPQ_VAL[g.mLv])} → ${mC!==null?money(MPQ_VAL[g.mLv+1]):'MAX'}</div></div><button class="btn btn-green buy-op" data-op="mpq" ${mC===null||g.cash<mC?'disabled style="opacity:0.45;"':''}>${mC===null?'MAX':money(mC)}</button></div>
+              <div class="shop-card"><div><strong>🔥 Streak Bonus</strong><div style="font-size:0.84rem;color:#d1d5db;margin-top:4px;">Lv.${g.sLv+1}: +${money(STR_VAL[g.sLv])} → ${sC!==null?'+'+money(STR_VAL[g.sLv+1]):'MAX'}</div></div><button class="btn btn-green buy-op" data-op="str" ${sC===null||g.cash<sC?'disabled style="opacity:0.45;"':''}>${sC===null?'MAX':money(sC)}</button></div>
+              <div class="shop-card"><div><strong>✖️ Multiplier</strong><div style="font-size:0.84rem;color:#d1d5db;margin-top:4px;">Lv.${g.xLv+1}: ${MUL_VAL[g.xLv]}x → ${xC!==null?MUL_VAL[g.xLv+1]+'x':'MAX'}</div></div><button class="btn btn-green buy-op" data-op="mul" ${xC===null||g.cash<xC?'disabled style="opacity:0.45;"':''}>${xC===null?'MAX':money(xC)}</button></div>
+              <div class="shop-card"><div><strong>🛡️ Insurance</strong><div style="font-size:0.84rem;color:#d1d5db;margin-top:4px;">Lv.${g.iLv+1}: ${INS_VAL[g.iLv]}% → ${iC!==null?INS_VAL[g.iLv+1]+'%':'MAX'}</div></div><button class="btn btn-green buy-op" data-op="ins" ${iC===null||g.cash<iC?'disabled style="opacity:0.45;"':''}>${iC===null?'MAX':money(iC)}</button></div>
+            </div>
+          `;
+        } else if (tab === 'powerups') {
+          inner = `
+            <div class="shop-grid">
+              <div class="shop-card"><div><strong>⚡ Mini Bonus (2x)</strong><div style="font-size:0.82rem;color:#d1d5db;">다음 정답 2배</div></div><button class="btn btn-navy buy-op" data-op="mini" ${g.cash<20?'disabled style="opacity:0.45;"':''}>$20</button></div>
+              <div class="shop-card"><div><strong>🚀 Mega Bonus (5x)</strong><div style="font-size:0.82rem;color:#d1d5db;">다음 정답 5배</div></div><button class="btn btn-navy buy-op" data-op="mega" ${g.cash<55?'disabled style="opacity:0.45;"':''}>$55</button></div>
+              <div class="shop-card"><div><strong>❄️ Icer (15s)</strong><div style="font-size:0.82rem;color:#d1d5db;">1위 경쟁자 15초 정지</div></div><button class="btn btn-navy buy-op" data-op="icer" ${g.cash<40?'disabled style="opacity:0.45;"':''}>$40</button></div>
+              <div class="shop-card"><div><strong>🏷️ Discounter (25% Off)</strong><div style="font-size:0.82rem;color:#d1d5db;">5분간 모든 업그레이드 25% 할인</div></div><button class="btn btn-navy buy-op" data-op="disc" ${g.cash<250?'disabled style="opacity:0.45;"':''}>$250</button></div>
+              <div class="shop-card"><div><strong>⏱️ Minute to Win It</strong><div style="font-size:0.82rem;color:#d1d5db;">60초간 모든 수익 2배</div></div><button class="btn btn-navy buy-op" data-op="min2" ${g.cash<500?'disabled style="opacity:0.45;"':''}>$500</button></div>
+              <div class="shop-card"><div><strong>💎 Quadgrader</strong><div style="font-size:0.82rem;color:#d1d5db;">4가지 업그레이드 동시 +1레벨!</div></div><button class="btn btn-navy buy-op" data-op="quad" ${g.cash<1200?'disabled style="opacity:0.45;"':''}>$1,200</button></div>
+            </div>
+          `;
+        } else {
+          inner = `
+            <div class="shop-grid">
+              ${THEMES.map(th => {
+                const owned = g.unlockedThemes.includes(th.id);
+                const active = g.theme === th.id;
+                return `
+                  <div class="shop-card" style="border-color:${active?'#34d399':'rgba(255,255,255,0.16)'};">
+                    <div><div style="width:100%;height:34px;border-radius:8px;background:${th.bg};margin-bottom:8px;border:1px solid rgba(255,255,255,0.2);"></div><strong>${th.name}</strong></div>
+                    <button class="btn ${active?'btn-green':'btn-outline'} buy-theme" data-tid="${th.id}" ${!owned && g.cash<th.cost?'disabled style="opacity:0.45;"':''}>
+                      ${active ? 'Equipped' : owned ? 'Equip' : money(th.cost)}
+                    </button>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          `;
+        }
+        return `
+          <div class="shop-tabs">
+            <button class="shop-tab-btn ${tab==='upgrades'?'active':''}" data-st="upgrades">Upgrades</button>
+            <button class="shop-tab-btn ${tab==='powerups'?'active':''}" data-st="powerups">Powerups</button>
+            <button class="shop-tab-btn ${tab==='themes'?'active':''}" data-st="themes">Themes</button>
+          </div>
+          ${inner}
+        `;
+      }
+
+      function execShopOp(op, rerender) {
+        const g = state.game; let ok = false;
+        if (op==='mpq' && g.mLv<MPQ_COST.length-1) { const c=shopPrice(MPQ_COST[g.mLv+1]); if(g.cash>=c){g.cash-=c;g.mLv++;ok=true;} }
+        else if (op==='str' && g.sLv<STR_COST.length-1) { const c=shopPrice(STR_COST[g.sLv+1]); if(g.cash>=c){g.cash-=c;g.sLv++;ok=true;} }
+        else if (op==='mul' && g.xLv<MUL_COST.length-1) { const c=shopPrice(MUL_COST[g.xLv+1]); if(g.cash>=c){g.cash-=c;g.xLv++;ok=true;} }
+        else if (op==='ins' && g.iLv<INS_COST.length-1) { const c=shopPrice(INS_COST[g.iLv+1]); if(g.cash>=c){g.cash-=c;g.iLv++;ok=true;} }
+        else if (op==='mini' && g.cash>=20) { g.cash-=20; g.nextBonus=2; ok=true; }
+        else if (op==='mega' && g.cash>=55) { g.cash-=55; g.nextBonus=5; ok=true; }
+        else if (op==='icer' && g.cash>=40) {
+          g.cash-=40; const t=g.players.filter(p=>!p.isMe).sort((a,b)=>b.cash-a.cash)[0];
+          if(t){t.frozenUntil=Date.now()+15000; toast(`${t.name} 15초 정지! ❄️`,'success');} ok=true;
+        }
+        else if (op==='disc' && g.cash>=250) { g.cash-=250; g.discountUntil=Date.now()+300000; toast('25% 할인 적용!', 'success'); ok=true; }
+        else if (op==='min2' && g.cash>=500) { g.cash-=500; g.minuteDoubleUntil=Date.now()+60000; toast('60초간 2배 수익!', 'success'); ok=true; }
+        else if (op==='quad' && g.cash>=1200) {
+          g.cash-=1200;
+          if(g.mLv<MPQ_COST.length-1)g.mLv++; if(g.sLv<STR_COST.length-1)g.sLv++;
+          if(g.xLv<MUL_COST.length-1)g.xLv++; if(g.iLv<INS_COST.length-1)g.iLv++;
+          ok=true;
+        }
+        if (ok) { Sound.play('buy'); updateHud(); rerender(); }
+      }
+
+      function openShop() {
+        const g = state.game; if (!g) return;
+        if (['fishtopia', 'dld', 'knockback', 'blastball', 'tag', 'ctf'].includes(g.mode)) {
+          function draw2dShop() {
+            openModal(`<h3>Shop (${money(g.cash)})</h3>` + buildShopHtml() + '<div style="margin-top:14px;text-align:right;"><button class="btn btn-outline btn-sm" id="s2Close">Close</button></div>', true);
+            $('s2Close').addEventListener('click', closeModal);
+            bindShopEvents(draw2dShop, $('modalBox'));
+          }
+          draw2dShop(); return;
+        }
+        g.inShop = true; $('playShopBtn').textContent = 'Questions';
+        $('classicBody').innerHTML = `
+          <div class="shop-container">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+              <h2>Shop</h2>
+              <button class="btn btn-green" id="shopBackQuiz">Back to Questions</button>
+            </div>
+            ${buildShopHtml()}
+          </div>
+        `;
+        $('shopBackQuiz').addEventListener('click', renderClassicQuestion);
+        bindShopEvents(openShop, $('classicBody'));
+      }
+
+      function bindShopEvents(rerender, root) {
+        const g = state.game;
+        root.querySelectorAll('.shop-tab-btn').forEach(b => b.addEventListener('click', () => { g.shopTab = b.dataset.st; rerender(); }));
+        root.querySelectorAll('.buy-op').forEach(b => b.addEventListener('click', () => execShopOp(b.dataset.op, rerender)));
+        root.querySelectorAll('.buy-theme').forEach(b => b.addEventListener('click', () => {
+          const th = THEMES.find(x => x.id === b.dataset.tid); if (!th) return;
+          if (!g.unlockedThemes.includes(th.id)) {
+            if (g.cash < th.cost) return;
+            g.cash -= th.cost; g.unlockedThemes.push(th.id);
+          }
+          g.theme = th.id;
+          $('screen-play').style.setProperty('--theme-bg', th.bg);
+          Sound.play('buy'); updateHud(); rerender();
+        }));
+      }
+
+      $('playShopBtn').addEventListener('click', () => {
+        const g = state.game; if (!g) return;
+        if (g.inShop) renderClassicQuestion(); else openShop();
+      });
+
+      $('playRankBtn').addEventListener('click', () => {
+        const g = state.game; if (!g) return;
+        const s = [...g.players].sort((a,b) => b.cash - a.cash);
+        openModal(`
+          <h3 style="margin-bottom:12px;">Leaderboard</h3>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
+            ${s.map((p,i)=>`<div style="display:flex;justify-content:space-between;padding:8px 12px;border-radius:8px;background:${p.isMe?'rgba(99,102,241,0.35)':'rgba(255,255,255,0.08)'};"><span>#${i+1} ${esc(p.name)}</span><strong style="color:#34d399;">${money(p.cash)}</strong></div>`).join('')}
+          </div>
+          <button class="btn btn-green btn-sm" id="rkC" style="width:100%;">Close</button>
+        `, true);
+        $('rkC').addEventListener('click', closeModal);
+      });
+
+      $('playMuteBtn').addEventListener('click', () => { Sound.muted = !Sound.muted; $('playMuteBtn').textContent = Sound.muted ? '🔇' : '🔊'; });
+      $('playQuitBtn').addEventListener('click', endGame);
+
+      /* ========================
+         2D MODES (FISHTOPIA + DLD)
+         ======================== */
+      const keys = {}, pad = { up:false, down:false, left:false, right:false };
+      window.addEventListener('keydown', (e) => {
+        keys[e.key.toLowerCase()] = true;
+        const g = state.game; if (!g || !g.running) return;
+        if ((g.mode==='classic'||g.mode==='lava') && !g.inShop && g.curQ) {
+          if (['1','2','3','4'].includes(e.key)) { const t = $('classicBody').querySelector('.t'+(parseInt(e.key,10)-1)); if(t)t.click(); }
+          else if (e.key === 'Enter') { const c = $('fbNext'); if(c)c.click(); }
+        } else if (['fishtopia','dld','knockback','blastball','tag','ctf'].includes(g.mode) && !g.qOpen) {
+          if (e.key.toLowerCase()==='e') open2dQuiz();
+          if (e.key.toLowerCase()==='f') { if (g.mode==='fishtopia') $('btn2dFish').click(); else $('btn2dFire').click(); }
+        }
+      });
+      window.addEventListener('keyup', (e) => { keys[e.key.toLowerCase()] = false; });
+      document.querySelectorAll('.dpad-btn').forEach(b => {
+        const d = b.dataset.d;
+        const on = (e) => { e.preventDefault(); pad[d]=true; }; const off = () => { pad[d]=false; };
+        b.addEventListener('mousedown', on); b.addEventListener('touchstart', on, {passive:false});
+        window.addEventListener('mouseup', off); window.addEventListener('touchend', off);
+      });
+      $('btn2dQuiz').addEventListener('click', open2dQuiz);
+
+      function open2dQuiz() {
+        const g = state.game; if (!g || g.qOpen) return;
+        g.qOpen = true;
+        const q = g.kit.questions[Math.floor(Math.random()*g.kit.questions.length)];
+        if (q.type === 'text') {
+          openModal(`<h3>Answer Question</h3><p style="font-size:1.15rem;font-weight:800;margin:12px 0;">${esc(q.prompt)}</p><input class="input" id="q2t" style="margin-bottom:12px;" /><button class="btn btn-green" id="q2s" style="width:100%;">Submit</button>`, true);
+          $('q2s').addEventListener('click', () => res2d($('q2t').value.trim().toLowerCase()===q.correct.trim().toLowerCase(), q.correct));
+        } else {
+          const opts = shuffle([q.correct, ...q.wrong.slice(0,3)]);
+          openModal(`<h3>Answer Question</h3><p style="font-size:1.15rem;font-weight:800;margin:12px 0;">${esc(q.prompt)}</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">${opts.map((o,i)=>`<button class="ans-tile t${i}" style="min-height:60px;font-size:0.95rem;" data-a="${esc(o)}">${esc(o)}</button>`).join('')}</div>`, true);
+          $('modalBox').querySelectorAll('.ans-tile').forEach(b => b.addEventListener('click', () => res2d(b.dataset.a===q.correct, q.correct)));
+        }
+      }
+      function res2d(ok, cor) {
+        const g = state.game; g.qOpen = false; g.total++; closeModal();
+        if (ok) {
+          g.correct++; g.streak++; if(g.streak>g.bestStreak)g.bestStreak=g.streak;
+          const r = calcEarned(true); g.cash += r; g.bait += 2; g.energy = Math.min(120, g.energy + 45); g.ammo = (g.ammo ?? 12) + 8; g.blasts = (g.blasts ?? 10) + 6;
+          Sound.play('correct'); toast(`+${money(r)} · Bait +2 / Energy +45`, 'success');
+        } else { g.streak = 0; Sound.play('wrong'); toast(`Incorrect: ${cor}`, 'error'); }
+        updateHud();
+      }
+
+      const BOAT_ZONES = [
+        { name: 'Starter Pier', cost: 0, bg: '#2ecc71', water: '#0984e3', fish: [{n:'Gray Fish',v:5},{n:'Green Fish',v:10},{n:'Red Fish',v:20}] },
+        { name: 'Purple Pond', cost: 10, bg: '#8b5cf6', water: '#4c1d95', fish: [{n:'Blue Fish',v:35},{n:'Purple Fish',v:55}] },
+        { name: 'Sandy Shores', cost: 30, bg: '#f59e0b', water: '#0284c7', fish: [{n:'Beach Fish',v:80},{n:'Starfish',v:120}] },
+        { name: 'Lucky Lake', cost: 100, bg: '#10b981', water: '#065f46', fish: [{n:'Galaxy Fish',v:250},{n:'GimFish',v:5000}] }
+      ];
+
+      $('btn2dBoat').addEventListener('click', () => {
+        const g = state.game; if (!g) return;
+        openModal(`
+          <h3>⛵ Fishtopia Boat Tickets & Gear</h3>
+          <div style="display:flex;flex-direction:column;gap:8px;margin:12px 0;">
+            ${BOAT_ZONES.map(z => {
+              const un = g.unlockedZones.includes(z.name);
+              return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:rgba(255,255,255,0.08);border-radius:8px;"><span>${z.name}</span><button class="btn btn-green btn-sm go-zone" data-z="${z.name}">${g.zone===z.name?'Here':un?'Travel':money(z.cost)}</button></div>`;
+            }).join('')}
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:rgba(255,255,255,0.08);border-radius:8px;"><span>🎒 Backpack Upgrade (Current: ${g.maxBag})</span><button class="btn btn-navy btn-sm" id="upBagBtn">${g.maxBag>=15?'MAX':g.maxBag===3?'$40 (7)':'$60 (15)'}</button></div>
+          </div>
+          <button class="btn btn-outline btn-sm" id="bzClose" style="width:100%;">Close</button>
+        `, true);
+        $('bzClose').addEventListener('click', closeModal);
+        $('modalBox').querySelectorAll('.go-zone').forEach(b => b.addEventListener('click', () => {
+          const z = BOAT_ZONES.find(x => x.name === b.dataset.z);
+          if (!g.unlockedZones.includes(z.name)) {
+            if (g.cash < z.cost) { toast('Not enough cash!', 'error'); return; }
+            g.cash -= z.cost; g.unlockedZones.push(z.name);
+          }
+          g.zone = z.name; Sound.play('buy'); updateHud(); closeModal();
+        }));
+        $('upBagBtn').addEventListener('click', () => {
+          if (g.maxBag === 3 && g.cash >= 40) { g.cash -= 40; g.maxBag = 7; Sound.play('buy'); updateHud(); closeModal(); }
+          else if (g.maxBag === 7 && g.cash >= 60) { g.cash -= 60; g.maxBag = 15; Sound.play('buy'); updateHud(); closeModal(); }
+          else toast('업그레이드 불가 또는 상금 부족', 'error');
+        });
+      });
+
+      /* ========================
+         AUTHENTIC GIM CHARACTER RENDERER & ANIMATION
+         ======================== */
+      function drawGim(ctx, x, y, opts) {
+        const {
+          color = '#1e0e62',
+          name = '',
+          walkPhase = 0,
+          moving = false,
+          lookX = 0,
+          lookY = 0,
+          squashX = 1,
+          squashY = 1,
+          shadowScale = 1,
+          t = 0
+        } = opts;
+
+        // Ground shadow
+        ctx.save();
+        ctx.fillStyle = 'rgba(0,0,0,0.28)';
+        ctx.beginPath();
+        ctx.ellipse(x, y + 22, 16 * shadowScale, 6 * shadowScale, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        const bob = moving ? Math.abs(Math.sin(walkPhase)) * -5 : Math.sin(t * 3.2) * 1.5;
+        const tilt = moving ? Math.sin(walkPhase) * 0.09 : 0;
+
+        ctx.save();
+        ctx.translate(x, y + bob);
+        ctx.rotate(tilt);
+        ctx.scale(squashX, squashY);
+
+        // Animated little oval feet
+        const leftFootY = 17 + (moving ? Math.max(0, Math.sin(walkPhase)) * -5 : 0);
+        const rightFootY = 17 + (moving ? Math.max(0, -Math.sin(walkPhase)) * -5 : 0);
+        const leftFootX = -8 + (moving ? Math.cos(walkPhase) * 3 : 0);
+        const rightFootX = 8 - (moving ? Math.cos(walkPhase) * 3 : 0);
+
+        [ [leftFootX, leftFootY], [rightFootX, rightFootY] ].forEach(([fx, fy]) => {
+          ctx.beginPath();
+          ctx.ellipse(fx, fy, 6.5, 4.5, 0, 0, Math.PI * 2);
+          ctx.fillStyle = color;
+          ctx.fill();
+          ctx.lineWidth = 2.8;
+          ctx.strokeStyle = '#111827';
+          ctx.stroke();
+        });
+
+        // Skin-specific shape (Pyramid vs Standard Bean Gim)
+        const skin = opts.skin || 'default';
+        if (skin === 'atlas_pyramid') {
+          ctx.beginPath();
+          ctx.moveTo(0, -22); ctx.lineTo(18, 17); ctx.lineTo(-18, 17); ctx.closePath();
+          ctx.fillStyle = '#eab308'; ctx.fill();
+          ctx.lineWidth = 3.2; ctx.strokeStyle = '#111827'; ctx.stroke();
+          ctx.strokeStyle = '#b45309'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(-10, 3); ctx.lineTo(10, 3); ctx.stroke();
+        } else {
+        // Exact chubby squircle Gimkit body
+        const bw = 36, bh = 33;
+        ctx.beginPath();
+        ctx.roundRect(-bw / 2, -bh / 2, bw, bh, [17, 17, 14, 14]);
+        ctx.fillStyle = color;
+        ctx.fill();
+
+        // Top highlight & bottom shading
+        ctx.save();
+        ctx.clip();
+        ctx.fillStyle = 'rgba(255,255,255,0.18)';
+        ctx.beginPath();
+        ctx.ellipse(-4, -bh / 2 + 5, 10, 5, -0.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = 'rgba(0,0,0,0.16)';
+        ctx.fillRect(-bw / 2, bh / 2 - 7, bw, 8);
+        ctx.restore();
+
+        // Crisp dark outline
+        ctx.beginPath();
+        ctx.roundRect(-bw / 2, -bh / 2, bw, bh, [17, 17, 14, 14]);
+        ctx.lineWidth = 3.4;
+        ctx.strokeStyle = '#111827';
+        ctx.stroke();
+        if (skin === 'atlas_tourist') {
+          // Sunglasses on forehead + camera
+          ctx.fillStyle = '#1e293b'; ctx.strokeStyle = '#111827'; ctx.lineWidth = 2;
+          ctx.fillRect(-11, -18, 9, 6); ctx.strokeRect(-11, -18, 9, 6);
+          ctx.fillRect(2, -18, 9, 6); ctx.strokeRect(2, -18, 9, 6);
+          ctx.fillStyle = '#334155'; ctx.fillRect(-7, 6, 14, 9); ctx.strokeRect(-7, 6, 14, 9);
+          ctx.beginPath(); ctx.arc(0, 10.5, 3, 0, Math.PI*2); ctx.fillStyle = '#38bdf8'; ctx.fill();
+        }
+        }
+
+        // Expressive Eyes (blink + look direction)
+        const blink = (Math.floor(t * 10) % 42 === 0);
+        const ex = Math.max(-3.5, Math.min(3.5, lookX * 3.5));
+        const ey = Math.max(-2.5, Math.min(2.5, lookY * 2.5)) - 3;
+
+        [-6 + ex, 6 + ex].forEach((ox) => {
+          if (blink) {
+            ctx.strokeStyle = '#111827';
+            ctx.lineWidth = 2.4;
+            ctx.beginPath();
+            ctx.moveTo(ox - 3.5, ey);
+            ctx.lineTo(ox + 3.5, ey);
+            ctx.stroke();
+          } else {
+            // Exact Gimkit solid dark vertical oval eye
+            ctx.beginPath();
+            ctx.ellipse(ox + lookX * 1.2, ey + lookY * 0.9, 2.6, 4.7, 0, 0, Math.PI * 2);
+            ctx.fillStyle = '#111827';
+            ctx.fill();
+          }
+        });
+
+        ctx.restore();
+
+        // Nameplate pill
+        if (name) {
+          ctx.save();
+          ctx.font = 'bold 12px -apple-system, BlinkMacSystemFont, sans-serif';
+          const tw = ctx.measureText(name).width;
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.72)';
+          ctx.beginPath();
+          ctx.roundRect(x - tw / 2 - 7, y - 44, tw + 14, 18, 9);
+          ctx.fill();
+          ctx.fillStyle = '#ffffff';
+          ctx.textAlign = 'center';
+          ctx.fillText(name, x, y - 31);
+          ctx.restore();
+        }
+      }
+
+      /* ========================
+         FISHTOPIA 2D ISLAND MAP
+         ======================== */
+      function runFishtopia() {
+        const c = $('canvas2d'), ctx = c.getContext('2d');
+        function fit() {
+          c.width = c.parentElement.clientWidth || 800;
+          c.height = Math.max(440, window.innerHeight - 130);
+        }
+        fit();
+
+        const W = 1400, H = 960;
+        const p = { x: 700, y: 460, spd: 4.0, walkPhase: 0, lookX: 0, lookY: 0, moving: false };
+        const island = { x: 220, y: 140, w: 960, h: 560 };
+        const dock = { x: 630, y: 680, w: 140, h: 150 };
+        const quizPad = { x: 340, y: 310, w: 110, h: 80 };
+        const sellPad = { x: 645, y: 230, w: 130, h: 80 };
+        const shopPad = { x: 940, y: 310, w: 110, h: 80 };
+        const boatPad = { x: 830, y: 690, w: 110, h: 70 };
+
+        const trees = [
+          { x: 270, y: 210 }, { x: 1110, y: 210 },
+          { x: 280, y: 610 }, { x: 1100, y: 600 },
+          { x: 520, y: 190 }, { x: 880, y: 190 }
+        ];
+        const npcGims = [
+          { x: 480, y: 480, vx: 1.4, vy: 0.9, color: '#dc2626', name: '민준 (AI)', wp: 0 },
+          { x: 900, y: 460, vx: -1.2, vy: 1.1, color: '#d97706', name: '서연 (AI)', wp: 1.5 }
+        ];
+
+        let castTimer = 0;
+
+        $('btn2dFish').onclick = () => {
+          const g = state.game;
+          const onDock = p.x > dock.x - 20 && p.x < dock.x + dock.w + 20 && p.y > dock.y - 20;
+          if (!onDock) { toast('나무 부두(Fishing Dock) 끝으로 이동해서 낚시하세요!', 'error'); return; }
+          if (g.bait <= 0) { toast('미끼가 부족합니다! 파란 단말기에서 문제를 푸세요.', 'error'); return; }
+          if (g.fishBag.length >= g.maxBag) { toast('가방이 꽉 찼습니다! Sell Fish 가판대에서 판매하세요.', 'error'); return; }
+          g.bait--;
+          castTimer = 28;
+          const zObj = BOAT_ZONES.find(z => z.name === g.zone) || BOAT_ZONES[0];
+          const f = zObj.fish[Math.random() < 0.12 && zObj.fish.length > 1 ? zObj.fish.length - 1 : Math.floor(Math.random() * zObj.fish.length)];
+          const val = Math.round(f.v * MUL_VAL[g.xLv]);
+          g.fishBag.push({ name: f.n, val });
+          Sound.play('buy');
+          toast(`🎣 ${f.n} (${money(val)}) 낚았습니다!`, 'success');
+          updateHud();
+        };
+
+        let lastTime = performance.now();
+        function loop(now) {
+          const g = state.game; if (!g || !g.running || g.mode !== 'fishtopia') return;
+          const dt = Math.min(0.05, (now - lastTime) / 1000);
+          lastTime = now;
+          const t = now / 1000;
+
+          if (!g.qOpen) {
+            let dx = 0, dy = 0;
+            if (keys['w'] || keys['arrowup'] || pad.up) dy--;
+            if (keys['s'] || keys['arrowdown'] || pad.down) dy++;
+            if (keys['a'] || keys['arrowleft'] || pad.left) dx--;
+            if (keys['d'] || keys['arrowright'] || pad.right) dx++;
+            p.moving = !!(dx || dy);
+            if (p.moving) {
+              const l = Math.hypot(dx, dy);
+              const nx = p.x + (dx / l) * p.spd;
+              const ny = p.y + (dy / l) * p.spd;
+              p.lookX = dx / l; p.lookY = dy / l;
+              p.walkPhase += dt * 14;
+              const inIsland = nx > island.x + 18 && nx < island.x + island.w - 18 && ny > island.y + 18 && ny < island.y + island.h - 18;
+              const onDock = nx > dock.x + 12 && nx < dock.x + dock.w - 12 && ny >= dock.y - 20 && ny < dock.y + dock.h - 15;
+              if (inIsland || onDock) { p.x = nx; p.y = ny; }
+            }
+            if (g.fishBag.length && p.x > sellPad.x && p.x < sellPad.x + sellPad.w && p.y > sellPad.y && p.y < sellPad.y + sellPad.h) {
+              const total = g.fishBag.reduce((a, b) => a + b.val, 0);
+              g.cash += total; g.fishBag = [];
+              Sound.play('correct'); toast(`💰 물고기 판매! +${money(total)}`, 'success'); updateHud();
+            }
+            if (keys['e'] && p.x > quizPad.x - 20 && p.x < quizPad.x + quizPad.w + 20 && p.y > quizPad.y - 20 && p.y < quizPad.y + quizPad.h + 20) {
+              keys['e'] = false; open2dQuiz();
+            }
+          }
+
+          npcGims.forEach(n => {
+            n.x += n.vx; n.y += n.vy; n.wp += dt * 10;
+            if (n.x < island.x + 60 || n.x > island.x + island.w - 60) n.vx *= -1;
+            if (n.y < island.y + 60 || n.y > island.y + island.h - 60) n.vy *= -1;
+          });
+
+          const zObj = BOAT_ZONES.find(z => z.name === g.zone) || BOAT_ZONES[0];
+          const camX = Math.max(0, Math.min(W - c.width, p.x - c.width / 2));
+          const camY = Math.max(0, Math.min(H - c.height, p.y - c.height / 2));
+
+          ctx.clearRect(0, 0, c.width, c.height);
+          ctx.save();
+          ctx.translate(-camX, -camY);
+
+          // Animated Ocean Water
+          ctx.fillStyle = zObj.water;
+          ctx.fillRect(0, 0, W, H);
+          ctx.strokeStyle = 'rgba(255,255,255,0.16)';
+          ctx.lineWidth = 2;
+          for (let wy = 40; wy < H; wy += 70) {
+            for (let wx = 40; wx < W; wx += 130) {
+              const waveX = wx + Math.sin(t * 1.6 + wy) * 14;
+              ctx.beginPath();
+              ctx.arc(waveX, wy, 18, 0.2, Math.PI - 0.2);
+              ctx.stroke();
+            }
+          }
+
+          // Sandy shoreline
+          ctx.fillStyle = '#fde68a';
+          ctx.beginPath();
+          ctx.roundRect(island.x - 26, island.y - 26, island.w + 52, island.h + 52, 46);
+          ctx.fill();
+
+          // Lush Island Grass
+          ctx.fillStyle = zObj.bg;
+          ctx.beginPath();
+          ctx.roundRect(island.x, island.y, island.w, island.h, 32);
+          ctx.fill();
+
+          // Stone paths
+          ctx.fillStyle = 'rgba(255,255,255,0.22)';
+          ctx.fillRect(quizPad.x + 40, sellPad.y + 30, shopPad.x - quizPad.x, 26);
+          ctx.fillRect(dock.x + 45, sellPad.y + 40, 50, dock.y - sellPad.y);
+
+          // Wooden Dock
+          ctx.fillStyle = '#92400e';
+          ctx.fillRect(dock.x, dock.y, dock.w, dock.h);
+          ctx.strokeStyle = '#78350f';
+          ctx.lineWidth = 3;
+          for (let py = dock.y + 15; py < dock.y + dock.h; py += 18) {
+            ctx.beginPath(); ctx.moveTo(dock.x, py); ctx.lineTo(dock.x + dock.w, py); ctx.stroke();
+          }
+
+          // Moored Boat
+          ctx.fillStyle = '#b45309';
+          ctx.beginPath();
+          ctx.ellipse(boatPad.x + 55, boatPad.y + 42 + Math.sin(t * 2.4) * 3, 46, 20, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
+          ctx.fillStyle = '#fff'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center';
+          ctx.fillText('⛵ BOAT', boatPad.x + 55, boatPad.y + 46 + Math.sin(t * 2.4) * 3);
+
+          // Stations
+          function drawStation(rect, bg, border, title, sub) {
+            ctx.fillStyle = bg; ctx.strokeStyle = border; ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.roundRect(rect.x, rect.y, rect.w, rect.h, 12); ctx.fill(); ctx.stroke();
+            ctx.fillStyle = '#fff'; ctx.font = 'bold 13px sans-serif'; ctx.textAlign = 'center';
+            ctx.fillText(title, rect.x + rect.w / 2, rect.y + 34);
+            ctx.font = '11px sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.85)';
+            ctx.fillText(sub, rect.x + rect.w / 2, rect.y + 54);
+          }
+          drawStation(quizPad, '#2563eb', '#93c5fd', '❓ QUESTIONS', 'Press E / Button');
+          drawStation(sellPad, '#059669', '#6ee7b7', '💰 SELL FISH', 'Walk Here');
+          drawStation(shopPad, '#7c3aed', '#c4b5fd', '🛒 SHOP', 'Top Bar');
+
+          // Swaying Palm Trees
+          trees.forEach(tr => {
+            ctx.fillStyle = '#78350f';
+            ctx.fillRect(tr.x - 6, tr.y - 10, 12, 34);
+            ctx.fillStyle = '#15803d';
+            for (let a = 0; a < 5; a++) {
+              const ang = (a / 5) * Math.PI * 2 + Math.sin(t * 1.5 + tr.x) * 0.06;
+              ctx.beginPath();
+              ctx.ellipse(tr.x + Math.cos(ang) * 18, tr.y - 14 + Math.sin(ang) * 12, 18, 7, ang, 0, Math.PI * 2);
+              ctx.fill();
+            }
+          });
+
+          // Fishing bobber animation
+          if (castTimer > 0) {
+            castTimer--;
+            ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x, dock.y + dock.h + 35); ctx.stroke();
+            ctx.beginPath(); ctx.arc(p.x, dock.y + dock.h + 35, 6, 0, Math.PI * 2);
+            ctx.fillStyle = '#ef4444'; ctx.fill();
+          }
+
+          // NPC Gims + Player Gim
+          npcGims.forEach(n => drawGim(ctx, n.x, n.y, { color: n.color, name: n.name, walkPhase: n.wp, moving: true, lookX: Math.sign(n.vx), lookY: Math.sign(n.vy), t }));
+          drawGim(ctx, p.x, p.y, { skin: state.playerSkin, color: state.playerColor, name: state.playerName, walkPhase: p.walkPhase, moving: p.moving, lookX: p.lookX, lookY: p.lookY, t });
+
+          ctx.restore();
+          rafId = requestAnimationFrame(loop);
+        }
+        rafId = requestAnimationFrame(loop);
+      }
+
+      /* ========================
+         DON'T LOOK DOWN (EXACT 6 NAMED SUMMITS, 1000m, SUMMIT 6 LASERS)
+         ======================== */
+      function runDLD() {
+        const c = $('canvas2d'), ctx = c.getContext('2d');
+        function fit() {
+          c.width = c.parentElement.clientWidth || 800;
+          c.height = Math.max(440, window.innerHeight - 130);
+        }
+        fit();
+
+        const SUMMIT_NAMES = [
+          'Summit 1: Emberwall Ascent',
+          'Summit 2: Coral Climb',
+          'Summit 3: Agent Adventure',
+          'Summit 4: Growing Up',
+          'Summit 5: Frosty Peaks',
+          'Summit 6: One Way Up'
+        ];
+        const SUMMIT_COLORS = ['#78716c', '#fb7185', '#6366f1', '#eab308', '#38bdf8', '#a855f7'];
+
+        const p = { x: 240, y: 40, vx: 0, vy: 0, jumps: 2, walkPhase: 0, lookX: 1, squashX: 1, squashY: 1 };
+        const plats = [{ x: 0, y: 40, w: 960, h: 42, summit: 1 }];
+        for (let i = 1; i <= 60; i++) {
+          const summit = Math.min(6, Math.floor((i - 1) / 10) + 1);
+          plats.push({ x: 80 + ((i * 193) % 580), y: i * 80 + 40, w: 136, h: 18, summit });
+        }
+        const lasers = [
+          { x: 180, y: 4250, w: 140 },
+          { x: 460, y: 4520, w: 150 }
+        ];
+        const clouds = Array.from({ length: 20 }, (_, i) => ({ x: (i * 173) % 900, y: 180 + i * 240, w: 90 + (i % 3) * 35 }));
+        const particles = [];
+        let jp = false, lastTime = performance.now(), bestSummit = 1;
+
+        function loop(now) {
+          const g = state.game; if (!g || !g.running || g.mode !== 'dld') return;
+          const dt = Math.min(0.05, (now - lastTime) / 1000);
+          lastTime = now;
+          const t = now / 1000;
+
+          let moving = false;
+          if (!g.qOpen) {
+            if (keys['a'] || keys['arrowleft'] || pad.left) { p.vx = -4.4; p.lookX = -1; moving = true; }
+            else if (keys['d'] || keys['arrowright'] || pad.right) { p.vx = 4.4; p.lookX = 1; moving = true; }
+            else p.vx *= 0.82;
+            if (moving) p.walkPhase += dt * 15;
+
+            const wj = keys['w'] || keys['arrowup'] || keys[' '] || pad.up;
+            if (wj && !jp && p.jumps > 0 && g.energy >= 5) {
+              p.vy = 11.4; p.jumps--; p.squashX = 0.84; p.squashY = 1.18;
+              g.energy -= 5; Sound.play('jump'); updateHud();
+              for (let k = 0; k < 6; k++) particles.push({ x: p.x + (Math.random() - 0.5) * 20, y: p.y - 12, vx: (Math.random() - 0.5) * 2.5, vy: -Math.random() * 2, life: 22 });
+            }
+            jp = wj;
+
+            p.vy -= 0.48;
+            const prevY = p.y;
+            p.x = Math.max(24, Math.min(840, p.x + p.vx));
+            p.y += p.vy;
+
+            if (p.vy <= 0) {
+              for (const pl of plats) {
+                if (p.x >= pl.x - 10 && p.x <= pl.x + pl.w + 10 && prevY >= pl.y && p.y <= pl.y) {
+                  if (p.vy < -4) { p.squashX = 1.22; p.squashY = 0.82; }
+                  p.y = pl.y; p.vy = 0; p.jumps = 2;
+                  if (pl.summit > bestSummit) {
+                    bestSummit = pl.summit;
+                    toast('🚩 ' + SUMMIT_NAMES[bestSummit - 1] + ' 도착!', 'success');
+                  }
+                  break;
+                }
+              }
+            }
+            // Summit 6 Lasers (active periodically)
+            const laserOn = Math.sin(t * 2.2) > 0;
+            if (laserOn) {
+              for (const lz of lasers) {
+                if (p.x >= lz.x && p.x <= lz.x + lz.w && Math.abs(p.y - lz.y) < 18) {
+                  p.y = 40; p.vy = 0; p.jumps = 2;
+                  Sound.play('wrong');
+                  toast('⚡ Summit 6 레이저에 닿아 Summit 1로 떨어졌습니다!', 'error');
+                  break;
+                }
+              }
+            }
+            if (p.y < 0) { p.y = 40; p.vy = 0; p.jumps = 2; }
+            p.squashX += (1 - p.squashX) * 0.18;
+            p.squashY += (1 - p.squashY) * 0.18;
+
+            g.heightM = Math.min(1000, Math.max(0, Math.round(p.y / 4.8)));
+            if (g.heightM > g.maxHeightM + 10) { g.cash += Math.round((g.heightM - g.maxHeightM) * 2); g.maxHeightM = g.heightM; updateHud(); }
+            if (g.heightM >= 1000) {
+              g.cash += 1000; Sound.play('correct'); toast('🏆 Climb Complete! 1,000m 정상 도달!', 'success');
+              endGame(); return;
+            }
+          }
+
+          const camY = Math.max(0, p.y - c.height * 0.42);
+          const ratio = Math.min(1, p.y / 4800);
+          const grad = ctx.createLinearGradient(0, 0, 0, c.height);
+          if (ratio < 0.35) { grad.addColorStop(0, '#38bdf8'); grad.addColorStop(1, '#bae6fd'); }
+          else if (ratio < 0.7) { grad.addColorStop(0, '#312e81'); grad.addColorStop(1, '#f97316'); }
+          else { grad.addColorStop(0, '#020617'); grad.addColorStop(1, '#1e1b4b'); }
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, c.width, c.height);
+
+          clouds.forEach(cl => {
+            const sy = c.height - (cl.y - camY);
+            if (sy < -60 || sy > c.height + 60) return;
+            ctx.fillStyle = 'rgba(255,255,255,0.38)';
+            ctx.beginPath(); ctx.roundRect(cl.x, sy, cl.w, 26, 13); ctx.fill();
+          });
+
+          // 3 Green Go! Flags at start
+          if (camY < 200) {
+            const fy = c.height - (40 - camY);
+            [70, 105, 140].forEach(fx => {
+              ctx.fillStyle = '#111827'; ctx.fillRect(fx, fy - 34, 3, 34);
+              ctx.fillStyle = '#22c55e'; ctx.fillRect(fx + 3, fy - 34, 22, 14);
+            });
+          }
+
+          plats.forEach((pl, i) => {
+            const sy = c.height - (pl.y - camY);
+            if (sy < -40 || sy > c.height + 40) return;
+            ctx.fillStyle = SUMMIT_COLORS[(pl.summit - 1) % SUMMIT_COLORS.length];
+            ctx.beginPath(); ctx.roundRect(pl.x, sy, pl.w, pl.h, 6); ctx.fill();
+            ctx.strokeStyle = '#111827'; ctx.lineWidth = 2; ctx.stroke();
+            if (i > 0 && i % 10 === 0) {
+              const sIdx = Math.min(5, Math.floor((i - 1) / 10));
+              ctx.fillStyle = '#fff'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center';
+              ctx.fillText('🚩 ' + SUMMIT_NAMES[sIdx], pl.x + pl.w / 2, sy - 8);
+            }
+          });
+
+          // Summit 6 Lasers
+          if (Math.sin(t * 2.2) > 0) {
+            lasers.forEach(lz => {
+              const sy = c.height - (lz.y - camY);
+              if (sy < -40 || sy > c.height + 40) return;
+              ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 5;
+              ctx.beginPath(); ctx.moveTo(lz.x, sy); ctx.lineTo(lz.x + lz.w, sy); ctx.stroke();
+            });
+          }
+
+          for (let i = particles.length - 1; i >= 0; i--) {
+            const pt = particles[i];
+            pt.x += pt.vx; pt.y += pt.vy; pt.life--;
+            const sy = c.height - (pt.y - camY);
+            ctx.fillStyle = `rgba(255,255,255,${pt.life / 22})`;
+            ctx.beginPath(); ctx.arc(pt.x, sy, 4, 0, Math.PI * 2); ctx.fill();
+            if (pt.life <= 0) particles.splice(i, 1);
+          }
+
+          const py = c.height - (p.y - camY) - 20;
+          drawGim(ctx, p.x, py, {
+            skin: state.playerSkin, color: state.playerColor,
+            name: state.playerName,
+            walkPhase: p.walkPhase,
+            moving: moving && p.vy === 0,
+            lookX: p.lookX,
+            lookY: p.vy > 1 ? -1 : p.vy < -2 ? 1 : 0,
+            squashX: p.squashX,
+            squashY: p.squashY,
+            shadowScale: p.vy === 0 ? 1 : 0.5,
+            t
+          });
+
+          rafId = requestAnimationFrame(loop);
+        }
+        rafId = requestAnimationFrame(loop);
+      }
+
+      /* ========================
+         KNOCKBACK (2D PLATFORMER GADGET BATTLE)
+         ======================== */
+      function runKnockback() {
+        const c = $('canvas2d'), ctx = c.getContext('2d');
+        c.width = c.parentElement.clientWidth || 800; c.height = Math.max(440, window.innerHeight - 130);
+        const g = state.game; g.ammo = 15; g.fragility = 0; g.kos = 0; updateHud();
+
+        const plats = [
+          { x: 140, y: 140, w: 520, h: 20 },
+          { x: 80,  y: 250, w: 180, h: 16 },
+          { x: 540, y: 250, w: 180, h: 16 },
+          { x: 290, y: 340, w: 220, h: 16 }
+        ];
+        const p = { x: 400, y: 140, vx: 0, vy: 0, jumps: 2, lookX: 1, wp: 0 };
+        const bots = [
+          { x: 220, y: 140, vx: 1.8, vy: 0, frag: 0, color: '#dc2626', name: '민준 (AI)', wp: 0 },
+          { x: 580, y: 140, vx: -1.8, vy: 0, frag: 0, color: '#d97706', name: '서연 (AI)', wp: 1 }
+        ];
+        const bullets = [];
+        let jp = false, last = performance.now();
+
+        function fire() {
+          if (g.ammo <= 0) { toast('탄약 부족! E키로 문제를 풀어 충전하세요.', 'error'); return; }
+          g.ammo--; Sound.play('jump'); updateHud();
+          bullets.push({ x: p.x + p.lookX * 18, y: p.y + 18, vx: p.lookX * 10, vy: 0, life: 55 });
+        }
+        $('btn2dFire').onclick = fire;
+        c.onclick = () => { if (!g.qOpen) fire(); };
+
+        function loop(now) {
+          if (!g || !g.running || g.mode !== 'knockback') return;
+          const dt = Math.min(0.05, (now - last) / 1000); last = now; const t = now / 1000;
+          let moving = false;
+          if (!g.qOpen) {
+            if (keys['a'] || keys['arrowleft'] || pad.left) { p.vx = -4.2; p.lookX = -1; moving = true; }
+            else if (keys['d'] || keys['arrowright'] || pad.right) { p.vx = 4.2; p.lookX = 1; moving = true; }
+            else p.vx *= 0.84;
+            if (moving) p.wp += dt * 14;
+            const wj = keys['w'] || keys['arrowup'] || keys[' '] || pad.up;
+            if (wj && !jp && p.jumps > 0) { p.vy = 11; p.jumps--; Sound.play('jump'); }
+            jp = wj;
+            p.vy -= 0.48;
+            const py0 = p.y; p.x += p.vx; p.y += p.vy;
+            if (p.vy <= 0) {
+              for (const pl of plats) {
+                if (p.x >= pl.x && p.x <= pl.x + pl.w && py0 >= pl.y && p.y <= pl.y) { p.y = pl.y; p.vy = 0; p.jumps = 2; break; }
+              }
+            }
+            if (p.y < -120 || p.x < -60 || p.x > 860) { p.x = 400; p.y = 350; p.vx = 0; p.vy = 0; g.fragility = 0; updateHud(); }
+
+            // Bots AI
+            bots.forEach(b => {
+              b.wp += dt * 10; b.vy -= 0.48;
+              const by0 = b.y; b.x += b.vx; b.y += b.vy;
+              if (b.y <= 140 && by0 >= 140 && b.x >= 140 && b.x <= 660) { b.y = 140; b.vy = 0; }
+              if (b.x < 160 || b.x > 640) b.vx *= -1;
+              if (b.y < -120 || b.x < -80 || b.x > 880) {
+                g.kos++; g.cash += 120; g.fragility = Math.max(0, g.fragility - 50);
+                b.x = 300 + Math.random() * 200; b.y = 360; b.vx = 1.8; b.vy = 0; b.frag = 0;
+                Sound.play('correct'); toast('💥 KNOCK OUT! +$120', 'success'); updateHud();
+              }
+            });
+
+            // Bullets
+            for (let i = bullets.length - 1; i >= 0; i--) {
+              const bl = bullets[i]; bl.x += bl.vx; bl.life--;
+              let hit = false;
+              bots.forEach(b => {
+                if (Math.hypot(bl.x - b.x, bl.y - (b.y + 18)) < 26) {
+                  b.frag = Math.min(999, b.frag + 35);
+                  const force = 4 + (b.frag / 25);
+                  b.vx = Math.sign(bl.vx) * force; b.vy = 6 + (b.frag / 45);
+                  hit = true; Sound.play('buy');
+                }
+              });
+              if (hit || bl.life <= 0) bullets.splice(i, 1);
+            }
+          }
+
+          ctx.fillStyle = '#1e1b4b'; ctx.fillRect(0, 0, c.width, c.height);
+          const offX = (c.width - 800) / 2;
+          ctx.save(); ctx.translate(offX, 0);
+          plats.forEach(pl => {
+            const sy = c.height - pl.y;
+            ctx.fillStyle = '#38bdf8'; ctx.beginPath(); ctx.roundRect(pl.x, sy, pl.w, pl.h, 6); ctx.fill();
+            ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 2; ctx.stroke();
+          });
+          bullets.forEach(bl => {
+            ctx.fillStyle = '#fbbf24'; ctx.beginPath(); ctx.arc(bl.x, c.height - bl.y, 6, 0, Math.PI * 2); ctx.fill();
+          });
+          bots.forEach(b => drawGim(ctx, b.x, c.height - b.y - 20, { color: b.color, name: `${b.name} (${b.frag}%)`, walkPhase: b.wp, moving: true, lookX: Math.sign(b.vx), t }));
+          drawGim(ctx, p.x, c.height - p.y - 20, { skin: state.playerSkin, color: state.playerColor, name: state.playerName, walkPhase: p.wp, moving, lookX: p.lookX, t });
+          ctx.restore();
+          rafId = requestAnimationFrame(loop);
+        }
+        rafId = requestAnimationFrame(loop);
+      }
+
+      /* ========================
+         BLASTBALL (2D SOCCER ARENA)
+         ======================== */
+      function runBlastball() {
+        const c = $('canvas2d'), ctx = c.getContext('2d');
+        c.width = c.parentElement.clientWidth || 800; c.height = Math.max(440, window.innerHeight - 130);
+        const g = state.game; g.blasts = 12; g.blueGoals = 0; g.redGoals = 0; updateHud();
+
+        const p = { x: 200, y: c.height / 2, spd: 4.2, wp: 0, lookX: 1, lookY: 0, moving: false };
+        const balls = [
+          { x: c.width / 2, y: c.height / 2 - 45, vx: 0, vy: 0, r: 18 },
+          { x: c.width / 2, y: c.height / 2 + 45, vx: 0, vy: 0, r: 18 }
+        ];
+        const redBots = [
+          { x: c.width - 180, y: c.height / 2 - 60, vx: -1.6, vy: 1.3, wp: 0 },
+          { x: c.width - 180, y: c.height / 2 + 60, vx: -1.4, vy: -1.5, wp: 1 }
+        ];
+
+        function blast() {
+          if (g.blasts <= 0) { toast('블래스트 부족! E키로 문제를 풀어 충전하세요.', 'error'); return; }
+          g.blasts--; Sound.play('jump'); updateHud();
+          balls.forEach(b => {
+            const dist = Math.hypot(b.x - p.x, b.y - p.y);
+            if (dist < 130) {
+              const ang = Math.atan2(b.y - p.y, b.x - p.x);
+              b.vx += Math.cos(ang) * 11; b.vy += Math.sin(ang) * 11;
+            }
+          });
+        }
+        $('btn2dFire').onclick = blast;
+        c.onclick = () => { if (!g.qOpen) blast(); };
+
+        let last = performance.now();
+        function loop(now) {
+          if (!g || !g.running || g.mode !== 'blastball') return;
+          const dt = Math.min(0.05, (now - last) / 1000); last = now; const t = now / 1000;
+          if (!g.qOpen) {
+            let dx=0, dy=0;
+            if (keys['w']||keys['arrowup']||pad.up) dy--; if (keys['s']||keys['arrowdown']||pad.down) dy++;
+            if (keys['a']||keys['arrowleft']||pad.left) dx--; if (keys['d']||keys['arrowright']||pad.right) dx++;
+            p.moving = !!(dx||dy);
+            if (p.moving) { const l=Math.hypot(dx,dy); p.x=Math.max(40,Math.min(c.width-40,p.x+(dx/l)*p.spd)); p.y=Math.max(40,Math.min(c.height-40,p.y+(dy/l)*p.spd)); p.lookX=dx/l; p.lookY=dy/l; p.wp+=dt*14; }
+
+            redBots.forEach(rb => {
+              const target = balls[0];
+              const ang = Math.atan2(target.y - rb.y, target.x - rb.x);
+              rb.x += Math.cos(ang) * 1.9; rb.y += Math.sin(ang) * 1.9; rb.wp += dt * 11;
+              if (Math.hypot(target.x - rb.x, target.y - rb.y) < 34) { target.vx -= 3.5; target.vy += (Math.random() - 0.5) * 3; }
+            });
+
+            balls.forEach(b => {
+              if (Math.hypot(b.x - p.x, b.y - p.y) < 34) {
+                const ang = Math.atan2(b.y - p.y, b.x - p.x);
+                b.vx += Math.cos(ang) * 4.5; b.vy += Math.sin(ang) * 4.5;
+              }
+              b.x += b.vx; b.y += b.vy; b.vx *= 0.96; b.vy *= 0.96;
+              if (b.y < 30 || b.y > c.height - 30) b.vy *= -1;
+              const inGoalY = b.y > c.height / 2 - 70 && b.y < c.height / 2 + 70;
+              if (b.x > c.width - 28 && inGoalY) {
+                g.blueGoals++; g.cash += 150; Sound.play('correct'); toast('⚽ GOAL! Gimchester United +$150', 'success');
+                b.x = c.width / 2; b.y = c.height / 2; b.vx = 0; b.vy = 0; updateHud();
+              } else if (b.x < 28 && inGoalY) {
+                g.redGoals++; Sound.play('wrong'); toast('⚽ Kitcelona 득점!', 'error');
+                b.x = c.width / 2; b.y = c.height / 2; b.vx = 0; b.vy = 0; updateHud();
+              } else if (b.x < 26 || b.x > c.width - 26) { b.vx *= -1; }
+            });
+          }
+
+          // Pitch
+          ctx.fillStyle = '#15803d'; ctx.fillRect(0, 0, c.width, c.height);
+          ctx.strokeStyle = 'rgba(255,255,255,0.45)'; ctx.lineWidth = 3;
+          ctx.strokeRect(26, 20, c.width - 52, c.height - 40);
+          ctx.beginPath(); ctx.moveTo(c.width / 2, 20); ctx.lineTo(c.width / 2, c.height - 20); ctx.stroke();
+          ctx.beginPath(); ctx.arc(c.width / 2, c.height / 2, 55, 0, Math.PI * 2); ctx.stroke();
+          // Goals
+          ctx.fillStyle = 'rgba(37,99,235,0.5)'; ctx.fillRect(0, c.height/2 - 70, 26, 140);
+          ctx.fillStyle = 'rgba(220,38,38,0.5)'; ctx.fillRect(c.width - 26, c.height/2 - 70, 26, 140);
+
+          balls.forEach(b => {
+            ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+            ctx.fillStyle = '#fff'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = '#111827'; ctx.stroke();
+          });
+          redBots.forEach(rb => drawGim(ctx, rb.x, rb.y, { color: '#dc2626', name: 'Kitcelona (AI)', walkPhase: rb.wp, moving: true, lookX: -1, t }));
+          drawGim(ctx, p.x, p.y, { skin: state.playerSkin, color: state.playerColor, name: state.playerName, walkPhase: p.wp, moving: p.moving, lookX: p.lookX, lookY: p.lookY, t });
+          rafId = requestAnimationFrame(loop);
+        }
+        rafId = requestAnimationFrame(loop);
+      }
+
+      /* ========================
+         TAG: DOMINATION
+         ======================== */
+      function runTagDomination() {
+        const c = $('canvas2d'), ctx = c.getContext('2d');
+        c.width = c.parentElement.clientWidth || 800; c.height = Math.max(440, window.innerHeight - 130);
+        const g = state.game; g.tags = 0; g.energy = 100; updateHud();
+
+        const p = { x: 140, y: c.height / 2, spd: 4.3, wp: 0, lookX: 1, lookY: 0, moving: false };
+        const zones = [
+          { label: 'A', x: c.width * 0.28, y: c.height * 0.3, owner: null },
+          { label: 'B', x: c.width * 0.50, y: c.height * 0.5, owner: null },
+          { label: 'C', x: c.width * 0.72, y: c.height * 0.7, owner: null }
+        ];
+        const enemies = [
+          { x: c.width - 140, y: 120, vx: -1.8, vy: 1.5, color: '#dc2626', name: '민준 (AI)', wp: 0 },
+          { x: c.width - 140, y: c.height - 120, vx: -1.5, vy: -1.7, color: '#d97706', name: '서연 (AI)', wp: 1 }
+        ];
+
+        function doTag() {
+          if (g.energy < 15) { toast('에너지 부족! E키로 문제를 푸세요.', 'error'); return; }
+          g.energy -= 15;
+          let hit = false;
+          enemies.forEach(en => {
+            if (Math.hypot(p.x - en.x, p.y - en.y) < 55) {
+              g.tags++; g.cash += 80; hit = true;
+              en.x = c.width - 90; en.y = 80 + Math.random() * (c.height - 160);
+              Sound.play('correct'); toast('🏷️ TAG 성공! +$80', 'success');
+            }
+          });
+          if (!hit) Sound.play('jump');
+          updateHud();
+        }
+        $('btn2dFire').onclick = doTag;
+
+        let last = performance.now(), zoneTick = 0;
+        function loop(now) {
+          if (!g || !g.running || g.mode !== 'tag') return;
+          const dt = Math.min(0.05, (now - last) / 1000); last = now; const t = now / 1000;
+          if (!g.qOpen) {
+            let dx=0, dy=0;
+            if (keys['w']||keys['arrowup']||pad.up) dy--; if (keys['s']||keys['arrowdown']||pad.down) dy++;
+            if (keys['a']||keys['arrowleft']||pad.left) dx--; if (keys['d']||keys['arrowright']||pad.right) dx++;
+            p.moving = !!(dx||dy);
+            if (p.moving) { const l=Math.hypot(dx,dy); p.x=Math.max(24,Math.min(c.width-24,p.x+(dx/l)*p.spd)); p.y=Math.max(24,Math.min(c.height-24,p.y+(dy/l)*p.spd)); p.lookX=dx/l; p.lookY=dy/l; p.wp+=dt*14; }
+
+            zones.forEach(z => {
+              if (Math.hypot(p.x - z.x, p.y - z.y) < 46 && z.owner !== 'me') {
+                z.owner = 'me'; Sound.play('buy'); toast(`거점 ${z.label} 점령!`, 'success');
+              }
+            });
+            zoneTick += dt;
+            if (zoneTick >= 1.5) {
+              zoneTick = 0;
+              const owned = zones.filter(z => z.owner === 'me').length;
+              if (owned > 0) { g.cash += owned * 10; updateHud(); }
+            }
+            enemies.forEach(en => {
+              en.x += en.vx; en.y += en.vy; en.wp += dt * 11;
+              if (en.x < 40 || en.x > c.width - 40) en.vx *= -1;
+              if (en.y < 40 || en.y > c.height - 40) en.vy *= -1;
+            });
+          }
+
+          ctx.fillStyle = '#0f172a'; ctx.fillRect(0, 0, c.width, c.height);
+          zones.forEach(z => {
+            ctx.beginPath(); ctx.arc(z.x, z.y, 46, 0, Math.PI * 2);
+            ctx.fillStyle = z.owner === 'me' ? 'rgba(16,185,129,0.3)' : 'rgba(255,255,255,0.1)'; ctx.fill();
+            ctx.lineWidth = 3; ctx.strokeStyle = z.owner === 'me' ? '#10b981' : '#94a3b8'; ctx.stroke();
+            ctx.fillStyle = '#fff'; ctx.font = 'bold 16px sans-serif'; ctx.textAlign = 'center';
+            ctx.fillText('ZONE ' + z.label, z.x, z.y + 6);
+          });
+          enemies.forEach(en => drawGim(ctx, en.x, en.y, { color: en.color, name: en.name, walkPhase: en.wp, moving: true, lookX: Math.sign(en.vx), t }));
+          drawGim(ctx, p.x, p.y, { skin: state.playerSkin, color: state.playerColor, name: state.playerName, walkPhase: p.wp, moving: p.moving, lookX: p.lookX, lookY: p.lookY, t });
+          rafId = requestAnimationFrame(loop);
+        }
+        rafId = requestAnimationFrame(loop);
+      }
+
+      /* ========================
+         CAPTURE THE FLAG (2D TEAM)
+         ======================== */
+      function runCTF() {
+        const c = $('canvas2d'), ctx = c.getContext('2d');
+        c.width = c.parentElement.clientWidth || 800; c.height = Math.max(440, window.innerHeight - 130);
+        const g = state.game; g.blueCaps = 0; g.redCaps = 0; g.hasFlag = false; updateHud();
+
+        const p = { x: 90, y: c.height / 2, spd: 4.3, wp: 0, lookX: 1, lookY: 0, moving: false };
+        const redFlag = { x: c.width - 80, y: c.height / 2 };
+        const blueBase = { x: 70, y: c.height / 2 };
+        const guards = [
+          { x: c.width * 0.68, y: 120, vy: 2.2, color: '#dc2626', name: '수비수 1', wp: 0 },
+          { x: c.width * 0.82, y: c.height - 120, vy: -2.4, color: '#dc2626', name: '수비수 2', wp: 1 }
+        ];
+
+        let last = performance.now();
+        function loop(now) {
+          if (!g || !g.running || g.mode !== 'ctf') return;
+          const dt = Math.min(0.05, (now - last) / 1000); last = now; const t = now / 1000;
+          if (!g.qOpen) {
+            let dx=0, dy=0;
+            if (keys['w']||keys['arrowup']||pad.up) dy--; if (keys['s']||keys['arrowdown']||pad.down) dy++;
+            if (keys['a']||keys['arrowleft']||pad.left) dx--; if (keys['d']||keys['arrowright']||pad.right) dx++;
+            p.moving = !!(dx||dy);
+            if (p.moving) { const l=Math.hypot(dx,dy); p.x=Math.max(24,Math.min(c.width-24,p.x+(dx/l)*p.spd)); p.y=Math.max(24,Math.min(c.height-24,p.y+(dy/l)*p.spd)); p.lookX=dx/l; p.lookY=dy/l; p.wp+=dt*14; }
+
+            if (!g.hasFlag && Math.hypot(p.x - redFlag.x, p.y - redFlag.y) < 34) {
+              g.hasFlag = true; Sound.play('buy'); toast('🚩 적 깃발을 획득했습니다! 왼쪽 기지로 돌아가세요!', 'success'); updateHud();
+            }
+            if (g.hasFlag && Math.hypot(p.x - blueBase.x, p.y - blueBase.y) < 42) {
+              g.hasFlag = false; g.blueCaps++; g.cash += 250; Sound.play('correct'); toast('🎉 깃발 탈취 성공! +$250', 'success'); updateHud();
+            }
+            guards.forEach(gd => {
+              gd.y += gd.vy; gd.wp += dt * 11;
+              if (gd.y < 50 || gd.y > c.height - 50) gd.vy *= -1;
+              if (Math.hypot(p.x - gd.x, p.y - gd.y) < 32) {
+                g.hasFlag = false; p.x = 90; p.y = c.height / 2; Sound.play('wrong');
+                toast('수비수에게 잡혔습니다! 기지로 복귀합니다.', 'error'); updateHud();
+              }
+            });
+          }
+
+          // Split field
+          ctx.fillStyle = '#1e3a8a'; ctx.fillRect(0, 0, c.width / 2, c.height);
+          ctx.fillStyle = '#7f1d1d'; ctx.fillRect(c.width / 2, 0, c.width / 2, c.height);
+          ctx.strokeStyle = '#fff'; ctx.lineWidth = 3;
+          ctx.beginPath(); ctx.moveTo(c.width / 2, 0); ctx.lineTo(c.width / 2, c.height); ctx.stroke();
+
+          // Blue Base
+          ctx.beginPath(); ctx.arc(blueBase.x, blueBase.y, 40, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(59,130,246,0.45)'; ctx.fill(); ctx.stroke();
+          ctx.fillStyle = '#fff'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center';
+          ctx.fillText('BLUE BASE', blueBase.x, blueBase.y + 4);
+
+          // Red Flag
+          if (!g.hasFlag) {
+            ctx.fillStyle = '#ef4444'; ctx.fillRect(redFlag.x - 4, redFlag.y - 24, 6, 36);
+            ctx.beginPath(); ctx.moveTo(redFlag.x + 2, redFlag.y - 24); ctx.lineTo(redFlag.x + 26, redFlag.y - 14); ctx.lineTo(redFlag.x + 2, redFlag.y - 4); ctx.fill();
+          }
+
+          guards.forEach(gd => drawGim(ctx, gd.x, gd.y, { color: gd.color, name: gd.name, walkPhase: gd.wp, moving: true, lookX: -1, t }));
+          drawGim(ctx, p.x, p.y, { skin: state.playerSkin, color: state.playerColor, name: state.playerName + (g.hasFlag ? ' 🚩' : ''), walkPhase: p.wp, moving: p.moving, lookX: p.lookX, lookY: p.lookY, t });
+          rafId = requestAnimationFrame(loop);
+        }
+        rafId = requestAnimationFrame(loop);
+      }
+
+      function endGame() {
+        const g = state.game; if (!g) return;
+        g.running = false; stopLoops(); closeModal();
+        const s = [...g.players].sort((a,b) => b.cash - a.cash);
+        const r = s.findIndex(p => p.isMe) + 1;
+        $('sumPlace').textContent = `Rank #${r} out of ${s.length}`;
+        $('sumCash').textContent = money(g.cash);
+        $('sumAcc').textContent = (g.total > 0 ? Math.round((g.correct / g.total) * 100) : 0) + '%';
+        $('sumBest').textContent = g.bestStreak;
+        $('sumList').innerHTML = s.map((p,i)=>`<div style="display:flex;justify-content:space-between;padding:10px 14px;border-radius:10px;background:${p.isMe?'rgba(99,102,241,0.35)':'rgba(255,255,255,0.08)'};"><span>#${i+1} ${esc(p.name)}</span><strong style="color:#34d399;">${money(p.cash)}</strong></div>`).join('');
+        state.xp += Math.max(80, g.correct * 35); while (state.xp >= 1000) { state.xp -= 1000; state.level++; state.gimBucks += 100; }
+        showScreen('summary');
+      }
+
+      $('sumAgainBtn').addEventListener('click', openLobby);
+      $('sumDashBtn').addEventListener('click', () => { state.game = null; showScreen('dash'); renderDash(); });
+
+      
+      // Landing page navigation -> enters Dashboard / Join / Modes
+      function enterDash(tab) { showScreen('dash'); switchDashTab(tab || 'home'); }
+      ['landLoginBtn', 'landSignUpBtn', 'landHeroCtaBtn', 'landBottomCtaBtn', 'landLinkLogin'].forEach(id => {
+        const el = $(id); if (el) el.addEventListener('click', () => enterDash('home'));
+      });
+      ['landJoinBtn', 'landLinkJoin'].forEach(id => {
+        const el = $(id); if (el) el.addEventListener('click', () => enterDash('join'));
+      });
+      ['landPricingBtn', 'landLinkPricing'].forEach(id => {
+        const el = $(id); if (el) el.addEventListener('click', () => toast('Gimkit Pro & Group Pricing은 무료 체험 모드로 모두 이용 가능합니다!', 'success'));
+      });
+      document.querySelectorAll('.land-mode-card').forEach(c => {
+        c.addEventListener('click', () => { state.selectedMode = c.dataset.lmode; openLobby(); });
+      });
+
+      window.addEventListener('load', () => { showScreen('landing'); switchDashTab('home'); renderDash(); renderCosmetics(); });
+    })();
+  </script>
+</body>
+</html>
