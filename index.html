@@ -218,19 +218,22 @@
     .input:focus, .select:focus, .textarea:focus { border-color: #6d28d9; }
     .textarea { min-height: 110px; resize: vertical; }
 
-    /* Exact Gimkit Chubby Squircle Gim Avatar */
+    /* Rounded creature avatar used in profile and cosmetics */
     .gim {
-      width: 40px; height: 36px; border-radius: 18px 18px 15px 15px; border: 3px solid #111827;
-      display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; position: relative;
-      box-shadow: inset 0 -5px 0 rgba(0,0,0,0.18), inset 0 3px 0 rgba(255,255,255,0.22);
+      width: 38px; height: 40px; border-radius: 48% 48% 43% 43%;
+      border: 3px solid #111827; display: inline-flex; align-items: center;
+      justify-content: center; flex-shrink: 0; position: relative;
+      box-shadow: inset 0 4px 0 rgba(255,255,255,.2), inset 0 -6px 0 rgba(0,0,0,.16);
+      transform: translateY(-1px);
     }
     .gim::before, .gim::after {
-      content: ''; position: absolute; bottom: -7px; width: 11px; height: 7px;
-      background: inherit; border: 2.5px solid #111827; border-radius: 0 0 6px 6px;
+      content: ''; position: absolute; bottom: -6px; width: 10px; height: 8px;
+      background: inherit; border: 2.5px solid #111827; border-top: 0;
+      border-radius: 0 0 8px 8px; z-index: -1;
     }
-    .gim::before { left: 5px; }
-    .gim::after { right: 5px; }
-    .gim-eyes { display: flex; gap: 7px; margin-top: -2px; }
+    .gim::before { left: 4px; transform: rotate(5deg); }
+    .gim::after { right: 4px; transform: rotate(-5deg); }
+    .gim-eyes { display: flex; gap: 7px; margin-top: -3px; }
     .gim-eye { width: 5px; height: 9px; background: #111827; border-radius: 50%; }
 
 
@@ -2463,325 +2466,86 @@
       /* ========================
          AUTHENTIC GIM CHARACTER RENDERER & ANIMATION
          ======================== */
-      function drawGim(ctx, x, y, opts) {
-        const {
-          color = '#1e0e62',
-          name = '',
-          walkPhase = 0,
-          moving = false,
-          lookX = 0,
-          lookY = 0,
-          squashX = 1,
-          squashY = 1,
-          shadowScale = 1,
-          t = 0
-        } = opts;
-
-        // Ground shadow
-        ctx.save();
-        ctx.fillStyle = 'rgba(0,0,0,0.28)';
-        ctx.beginPath();
-        ctx.ellipse(x, y + 22, 16 * shadowScale, 6 * shadowScale, 0, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-
-        const bob = moving ? Math.abs(Math.sin(walkPhase)) * -5 : Math.sin(t * 3.2) * 1.5;
-        const tilt = moving ? Math.sin(walkPhase) * 0.09 : 0;
-
-        ctx.save();
-        ctx.translate(x, y + bob);
-        ctx.rotate(tilt);
-        ctx.scale(squashX, squashY);
-
-        // Animated little oval feet
-        const leftFootY = 17 + (moving ? Math.max(0, Math.sin(walkPhase)) * -5 : 0);
-        const rightFootY = 17 + (moving ? Math.max(0, -Math.sin(walkPhase)) * -5 : 0);
-        const leftFootX = -8 + (moving ? Math.cos(walkPhase) * 3 : 0);
-        const rightFootX = 8 - (moving ? Math.cos(walkPhase) * 3 : 0);
-
-        [ [leftFootX, leftFootY], [rightFootX, rightFootY] ].forEach(([fx, fy]) => {
-          ctx.beginPath();
-          ctx.ellipse(fx, fy, 6.5, 4.5, 0, 0, Math.PI * 2);
-          ctx.fillStyle = color;
-          ctx.fill();
-          ctx.lineWidth = 2.8;
-          ctx.strokeStyle = '#111827';
-          ctx.stroke();
-        });
-
-        // Skin-specific shape (Pyramid vs Standard Bean Gim)
+      function drawGim(ctx, x, y, opts = {}) {
+        const { color = '#1e0e62', name = '', walkPhase = 0, moving = false,
+          lookX = 0, lookY = 0, squashX = 1, squashY = 1, shadowScale = 1, t = 0 } = opts;
         const skin = opts.skin || 'default';
-        if (skin === 'atlas_pyramid') {
-          ctx.beginPath();
-          ctx.moveTo(0, -22); ctx.lineTo(18, 17); ctx.lineTo(-18, 17); ctx.closePath();
-          ctx.fillStyle = '#eab308'; ctx.fill();
-          ctx.lineWidth = 3.2; ctx.strokeStyle = '#111827'; ctx.stroke();
-          ctx.strokeStyle = '#b45309'; ctx.lineWidth = 2;
-          ctx.beginPath(); ctx.moveTo(-10, 3); ctx.lineTo(10, 3); ctx.stroke();
-        } else {
-        // Exact chubby squircle Gimkit body
-        const bw = 36, bh = 33;
-        ctx.beginPath();
-        ctx.roundRect(-bw / 2, -bh / 2, bw, bh, [17, 17, 14, 14]);
-        ctx.fillStyle = color;
-        ctx.fill();
 
-        // Top highlight & bottom shading
         ctx.save();
-        ctx.clip();
-        ctx.fillStyle = 'rgba(255,255,255,0.18)';
-        ctx.beginPath();
-        ctx.ellipse(-4, -bh / 2 + 5, 10, 5, -0.2, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = 'rgba(0,0,0,0.16)';
-        ctx.fillRect(-bw / 2, bh / 2 - 7, bw, 8);
+        ctx.fillStyle = 'rgba(0,0,0,0.24)';
+        ctx.beginPath(); ctx.ellipse(x, y + 22, 15 * shadowScale, 5 * shadowScale, 0, 0, Math.PI * 2); ctx.fill();
         ctx.restore();
 
-        // Crisp dark outline
-        ctx.beginPath();
-        ctx.roundRect(-bw / 2, -bh / 2, bw, bh, [17, 17, 14, 14]);
-        ctx.lineWidth = 3.4;
-        ctx.strokeStyle = '#111827';
-        ctx.stroke();
-        if (skin === 'atlas_tourist') {
-          // Sunglasses on forehead + camera
-          ctx.fillStyle = '#1e293b'; ctx.strokeStyle = '#111827'; ctx.lineWidth = 2;
-          ctx.fillRect(-11, -18, 9, 6); ctx.strokeRect(-11, -18, 9, 6);
-          ctx.fillRect(2, -18, 9, 6); ctx.strokeRect(2, -18, 9, 6);
-          ctx.fillStyle = '#334155'; ctx.fillRect(-7, 6, 14, 9); ctx.strokeRect(-7, 6, 14, 9);
-          ctx.beginPath(); ctx.arc(0, 10.5, 3, 0, Math.PI*2); ctx.fillStyle = '#38bdf8'; ctx.fill();
-        }
+        const phase = moving ? walkPhase : t * 1.8;
+        const bob = moving ? -Math.abs(Math.sin(phase)) * 3.2 : Math.sin(t * 2.4) * 1.1;
+        const tilt = moving ? Math.sin(phase) * 0.055 : Math.sin(t * 1.4) * 0.012;
+        const step = moving ? Math.sin(phase) : 0;
+
+        ctx.save();
+        ctx.translate(x, y + bob); ctx.rotate(tilt); ctx.scale(squashX, squashY);
+
+        if (skin !== 'atlas_pyramid') {
+          [[-7.5, step], [7.5, -step]].forEach(([fx, swing]) => {
+            ctx.save(); ctx.translate(fx + swing * 2.2, 16.5 + Math.max(0, -swing) * 2);
+            ctx.rotate(swing * 0.12); ctx.beginPath(); ctx.ellipse(0, 0, 5.7, 4.2, 0, 0, Math.PI * 2);
+            ctx.fillStyle = color; ctx.fill(); ctx.lineWidth = 2.4; ctx.strokeStyle = '#111827'; ctx.stroke(); ctx.restore();
+          });
         }
 
-        // Expressive Eyes (blink + look direction)
-        const blink = (Math.floor(t * 10) % 42 === 0);
-        const ex = Math.max(-3.5, Math.min(3.5, lookX * 3.5));
-        const ey = Math.max(-2.5, Math.min(2.5, lookY * 2.5)) - 3;
+        if (skin === 'atlas_pyramid') {
+          ctx.beginPath(); ctx.moveTo(0, -23); ctx.lineTo(18, 16); ctx.lineTo(-18, 16); ctx.closePath();
+          ctx.fillStyle = '#eab308'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = '#111827'; ctx.stroke();
+          ctx.strokeStyle = '#b45309'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-10, 3); ctx.lineTo(10, 3); ctx.stroke();
+        } else {
+          // Rounded bean silhouette with a domed crown, broad cheeks and tapered base
+          const body = () => {
+            ctx.beginPath(); ctx.moveTo(0, -21);
+            ctx.bezierCurveTo(12, -21, 19, -13, 18, -2);
+            ctx.bezierCurveTo(18, 7, 14, 15, 8, 17);
+            ctx.bezierCurveTo(4, 19, -4, 19, -8, 17);
+            ctx.bezierCurveTo(-14, 15, -18, 7, -18, -2);
+            ctx.bezierCurveTo(-19, -13, -12, -21, 0, -21); ctx.closePath();
+          };
+          body(); ctx.fillStyle = color; ctx.fill();
+          ctx.save(); ctx.clip();
+          const shine = ctx.createRadialGradient(-7, -14, 1, -5, -11, 17);
+          shine.addColorStop(0, 'rgba(255,255,255,0.28)'); shine.addColorStop(1, 'rgba(255,255,255,0)');
+          ctx.fillStyle = shine; ctx.fillRect(-20, -23, 25, 27);
+          const shade = ctx.createLinearGradient(0, 5, 0, 20);
+          shade.addColorStop(0, 'rgba(0,0,0,0)'); shade.addColorStop(1, 'rgba(0,0,0,0.19)');
+          ctx.fillStyle = shade; ctx.fillRect(-20, 3, 40, 18); ctx.restore();
+          body(); ctx.lineWidth = 3.1; ctx.strokeStyle = '#111827'; ctx.stroke();
 
-        [-6 + ex, 6 + ex].forEach((ox) => {
+          if (skin === 'atlas_tourist') {
+            ctx.fillStyle = '#1e293b'; ctx.strokeStyle = '#111827'; ctx.lineWidth = 1.8;
+            ctx.fillRect(-11, -18, 9, 6); ctx.strokeRect(-11, -18, 9, 6);
+            ctx.fillRect(2, -18, 9, 6); ctx.strokeRect(2, -18, 9, 6);
+            ctx.fillStyle = '#334155'; ctx.fillRect(-7, 6, 14, 9); ctx.strokeRect(-7, 6, 14, 9);
+            ctx.beginPath(); ctx.arc(0, 10.5, 3, 0, Math.PI * 2); ctx.fillStyle = '#38bdf8'; ctx.fill();
+          }
+        }
+
+        const blink = (Math.floor(t * 2.3) % 37 === 0);
+        const ex = Math.max(-2.2, Math.min(2.2, lookX * 2.2));
+        const ey = Math.max(-1.5, Math.min(1.5, lookY * 1.5)) - 3.2;
+        [-5.8 + ex, 5.8 + ex].forEach(ox => {
           if (blink) {
-            ctx.strokeStyle = '#111827';
-            ctx.lineWidth = 2.4;
-            ctx.beginPath();
-            ctx.moveTo(ox - 3.5, ey);
-            ctx.lineTo(ox + 3.5, ey);
-            ctx.stroke();
+            ctx.strokeStyle = '#111827'; ctx.lineWidth = 2.2;
+            ctx.beginPath(); ctx.moveTo(ox - 2.8, ey); ctx.lineTo(ox + 2.8, ey); ctx.stroke();
           } else {
-            // Exact Gimkit solid dark vertical oval eye
-            ctx.beginPath();
-            ctx.ellipse(ox + lookX * 1.2, ey + lookY * 0.9, 2.6, 4.7, 0, 0, Math.PI * 2);
-            ctx.fillStyle = '#111827';
-            ctx.fill();
+            ctx.beginPath(); ctx.ellipse(ox + lookX * 0.6, ey + lookY * 0.5, 2.25, 4.1, 0, 0, Math.PI * 2);
+            ctx.fillStyle = '#111827'; ctx.fill();
           }
         });
-
         ctx.restore();
 
-        // Nameplate pill
         if (name) {
-          ctx.save();
-          ctx.font = 'bold 12px -apple-system, BlinkMacSystemFont, sans-serif';
+          ctx.save(); ctx.font = 'bold 12px -apple-system, BlinkMacSystemFont, sans-serif';
           const tw = ctx.measureText(name).width;
-          ctx.fillStyle = 'rgba(15, 23, 42, 0.72)';
-          ctx.beginPath();
-          ctx.roundRect(x - tw / 2 - 7, y - 44, tw + 14, 18, 9);
-          ctx.fill();
-          ctx.fillStyle = '#ffffff';
-          ctx.textAlign = 'center';
-          ctx.fillText(name, x, y - 31);
-          ctx.restore();
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.72)'; ctx.beginPath();
+          ctx.roundRect(x - tw / 2 - 7, y - 39, tw + 14, 19, 9); ctx.fill();
+          ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.fillText(name, x, y - 26); ctx.restore();
         }
-      }
-
-      /* ========================
-         FISHTOPIA 2D ISLAND MAP
-         ======================== */
-      function runFishtopia() {
-        const c = $('canvas2d'), ctx = c.getContext('2d');
-        function fit() {
-          c.width = c.parentElement.clientWidth || 800;
-          c.height = Math.max(440, window.innerHeight - 130);
-        }
-        fit();
-
-        const W = 1400, H = 960;
-        const p = { x: 700, y: 460, spd: 4.0, walkPhase: 0, lookX: 0, lookY: 0, moving: false };
-        const island = { x: 220, y: 140, w: 960, h: 560 };
-        const dock = { x: 630, y: 680, w: 140, h: 150 };
-        const quizPad = { x: 340, y: 310, w: 110, h: 80 };
-        const sellPad = { x: 645, y: 230, w: 130, h: 80 };
-        const shopPad = { x: 940, y: 310, w: 110, h: 80 };
-        const boatPad = { x: 830, y: 690, w: 110, h: 70 };
-
-        const trees = [
-          { x: 270, y: 210 }, { x: 1110, y: 210 },
-          { x: 280, y: 610 }, { x: 1100, y: 600 },
-          { x: 520, y: 190 }, { x: 880, y: 190 }
-        ];
-        const npcGims = [
-          { x: 480, y: 480, vx: 1.4, vy: 0.9, color: '#dc2626', name: '민준 (AI)', wp: 0 },
-          { x: 900, y: 460, vx: -1.2, vy: 1.1, color: '#d97706', name: '서연 (AI)', wp: 1.5 }
-        ];
-
-        let castTimer = 0;
-
-        $('btn2dFish').onclick = () => {
-          const g = state.game;
-          const onDock = p.x > dock.x - 20 && p.x < dock.x + dock.w + 20 && p.y > dock.y - 20;
-          if (!onDock) { toast('나무 부두(Fishing Dock) 끝으로 이동해서 낚시하세요!', 'error'); return; }
-          if (g.bait <= 0) { toast('미끼가 부족합니다! 파란 단말기에서 문제를 푸세요.', 'error'); return; }
-          if (g.fishBag.length >= g.maxBag) { toast('가방이 꽉 찼습니다! Sell Fish 가판대에서 판매하세요.', 'error'); return; }
-          g.bait--;
-          castTimer = 28;
-          const zObj = BOAT_ZONES.find(z => z.name === g.zone) || BOAT_ZONES[0];
-          const f = zObj.fish[Math.random() < 0.12 && zObj.fish.length > 1 ? zObj.fish.length - 1 : Math.floor(Math.random() * zObj.fish.length)];
-          const val = Math.round(f.v * MUL_VAL[g.xLv]);
-          g.fishBag.push({ name: f.n, val });
-          Sound.play('buy');
-          toast(`🎣 ${f.n} (${money(val)}) 낚았습니다!`, 'success');
-          updateHud();
-        };
-
-        let lastTime = performance.now();
-        function loop(now) {
-          const g = state.game; if (!g || !g.running || g.mode !== 'fishtopia') return;
-          const dt = Math.min(0.05, (now - lastTime) / 1000);
-          lastTime = now;
-          const t = now / 1000;
-
-          if (!g.qOpen) {
-            let dx = 0, dy = 0;
-            if (keys['w'] || keys['arrowup'] || pad.up) dy--;
-            if (keys['s'] || keys['arrowdown'] || pad.down) dy++;
-            if (keys['a'] || keys['arrowleft'] || pad.left) dx--;
-            if (keys['d'] || keys['arrowright'] || pad.right) dx++;
-            p.moving = !!(dx || dy);
-            if (p.moving) {
-              const l = Math.hypot(dx, dy);
-              const nx = p.x + (dx / l) * p.spd;
-              const ny = p.y + (dy / l) * p.spd;
-              p.lookX = dx / l; p.lookY = dy / l;
-              p.walkPhase += dt * 14;
-              const inIsland = nx > island.x + 18 && nx < island.x + island.w - 18 && ny > island.y + 18 && ny < island.y + island.h - 18;
-              const onDock = nx > dock.x + 12 && nx < dock.x + dock.w - 12 && ny >= dock.y - 20 && ny < dock.y + dock.h - 15;
-              if (inIsland || onDock) { p.x = nx; p.y = ny; }
-            }
-            if (g.fishBag.length && p.x > sellPad.x && p.x < sellPad.x + sellPad.w && p.y > sellPad.y && p.y < sellPad.y + sellPad.h) {
-              const total = g.fishBag.reduce((a, b) => a + b.val, 0);
-              g.cash += total; g.fishBag = [];
-              Sound.play('correct'); toast(`💰 물고기 판매! +${money(total)}`, 'success'); updateHud();
-            }
-            if (keys['e'] && p.x > quizPad.x - 20 && p.x < quizPad.x + quizPad.w + 20 && p.y > quizPad.y - 20 && p.y < quizPad.y + quizPad.h + 20) {
-              keys['e'] = false; open2dQuiz();
-            }
-          }
-
-          npcGims.forEach(n => {
-            n.x += n.vx; n.y += n.vy; n.wp += dt * 10;
-            if (n.x < island.x + 60 || n.x > island.x + island.w - 60) n.vx *= -1;
-            if (n.y < island.y + 60 || n.y > island.y + island.h - 60) n.vy *= -1;
-          });
-
-          const zObj = BOAT_ZONES.find(z => z.name === g.zone) || BOAT_ZONES[0];
-          const camX = Math.max(0, Math.min(W - c.width, p.x - c.width / 2));
-          const camY = Math.max(0, Math.min(H - c.height, p.y - c.height / 2));
-
-          ctx.clearRect(0, 0, c.width, c.height);
-          ctx.save();
-          ctx.translate(-camX, -camY);
-
-          // Animated Ocean Water
-          ctx.fillStyle = zObj.water;
-          ctx.fillRect(0, 0, W, H);
-          ctx.strokeStyle = 'rgba(255,255,255,0.16)';
-          ctx.lineWidth = 2;
-          for (let wy = 40; wy < H; wy += 70) {
-            for (let wx = 40; wx < W; wx += 130) {
-              const waveX = wx + Math.sin(t * 1.6 + wy) * 14;
-              ctx.beginPath();
-              ctx.arc(waveX, wy, 18, 0.2, Math.PI - 0.2);
-              ctx.stroke();
-            }
-          }
-
-          // Sandy shoreline
-          ctx.fillStyle = '#fde68a';
-          ctx.beginPath();
-          ctx.roundRect(island.x - 26, island.y - 26, island.w + 52, island.h + 52, 46);
-          ctx.fill();
-
-          // Lush Island Grass
-          ctx.fillStyle = zObj.bg;
-          ctx.beginPath();
-          ctx.roundRect(island.x, island.y, island.w, island.h, 32);
-          ctx.fill();
-
-          // Stone paths
-          ctx.fillStyle = 'rgba(255,255,255,0.22)';
-          ctx.fillRect(quizPad.x + 40, sellPad.y + 30, shopPad.x - quizPad.x, 26);
-          ctx.fillRect(dock.x + 45, sellPad.y + 40, 50, dock.y - sellPad.y);
-
-          // Wooden Dock
-          ctx.fillStyle = '#92400e';
-          ctx.fillRect(dock.x, dock.y, dock.w, dock.h);
-          ctx.strokeStyle = '#78350f';
-          ctx.lineWidth = 3;
-          for (let py = dock.y + 15; py < dock.y + dock.h; py += 18) {
-            ctx.beginPath(); ctx.moveTo(dock.x, py); ctx.lineTo(dock.x + dock.w, py); ctx.stroke();
-          }
-
-          // Moored Boat
-          ctx.fillStyle = '#b45309';
-          ctx.beginPath();
-          ctx.ellipse(boatPad.x + 55, boatPad.y + 42 + Math.sin(t * 2.4) * 3, 46, 20, 0, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.stroke();
-          ctx.fillStyle = '#fff'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center';
-          ctx.fillText('⛵ BOAT', boatPad.x + 55, boatPad.y + 46 + Math.sin(t * 2.4) * 3);
-
-          // Stations
-          function drawStation(rect, bg, border, title, sub) {
-            ctx.fillStyle = bg; ctx.strokeStyle = border; ctx.lineWidth = 3;
-            ctx.beginPath(); ctx.roundRect(rect.x, rect.y, rect.w, rect.h, 12); ctx.fill(); ctx.stroke();
-            ctx.fillStyle = '#fff'; ctx.font = 'bold 13px sans-serif'; ctx.textAlign = 'center';
-            ctx.fillText(title, rect.x + rect.w / 2, rect.y + 34);
-            ctx.font = '11px sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.85)';
-            ctx.fillText(sub, rect.x + rect.w / 2, rect.y + 54);
-          }
-          drawStation(quizPad, '#2563eb', '#93c5fd', '❓ QUESTIONS', 'Press E / Button');
-          drawStation(sellPad, '#059669', '#6ee7b7', '💰 SELL FISH', 'Walk Here');
-          drawStation(shopPad, '#7c3aed', '#c4b5fd', '🛒 SHOP', 'Top Bar');
-
-          // Swaying Palm Trees
-          trees.forEach(tr => {
-            ctx.fillStyle = '#78350f';
-            ctx.fillRect(tr.x - 6, tr.y - 10, 12, 34);
-            ctx.fillStyle = '#15803d';
-            for (let a = 0; a < 5; a++) {
-              const ang = (a / 5) * Math.PI * 2 + Math.sin(t * 1.5 + tr.x) * 0.06;
-              ctx.beginPath();
-              ctx.ellipse(tr.x + Math.cos(ang) * 18, tr.y - 14 + Math.sin(ang) * 12, 18, 7, ang, 0, Math.PI * 2);
-              ctx.fill();
-            }
-          });
-
-          // Fishing bobber animation
-          if (castTimer > 0) {
-            castTimer--;
-            ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5;
-            ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x, dock.y + dock.h + 35); ctx.stroke();
-            ctx.beginPath(); ctx.arc(p.x, dock.y + dock.h + 35, 6, 0, Math.PI * 2);
-            ctx.fillStyle = '#ef4444'; ctx.fill();
-          }
-
-          // NPC Gims + Player Gim
-          npcGims.forEach(n => drawGim(ctx, n.x, n.y, { color: n.color, name: n.name, walkPhase: n.wp, moving: true, lookX: Math.sign(n.vx), lookY: Math.sign(n.vy), t }));
-          drawGim(ctx, p.x, p.y, { skin: state.playerSkin, color: state.playerColor, name: state.playerName, walkPhase: p.walkPhase, moving: p.moving, lookX: p.lookX, lookY: p.lookY, t });
-
-          ctx.restore();
-          rafId = requestAnimationFrame(loop);
-        }
-        rafId = requestAnimationFrame(loop);
       }
 
       /* ========================
